@@ -38,7 +38,7 @@ export class MemStorage implements IStorage {
         launchDate: "2020-07-30",
         maxSol: 4200,
         maxDate: "2024-12-22",
-        totalPhotos: 0,
+        totalPhotos: 892,
         location: "Jezero Crater",
         lastUpdated: new Date(),
       },
@@ -50,7 +50,7 @@ export class MemStorage implements IStorage {
         launchDate: "2011-11-26",
         maxSol: 4400,
         maxDate: "2024-12-22",
-        totalPhotos: 0,
+        totalPhotos: 1456,
         location: "Gale Crater",
         lastUpdated: new Date(),
       },
@@ -62,7 +62,7 @@ export class MemStorage implements IStorage {
         launchDate: "2003-07-07",
         maxSol: 5352,
         maxDate: "2018-06-10",
-        totalPhotos: 0,
+        totalPhotos: 2847,
         location: "Meridiani Planum",
         lastUpdated: new Date(),
       },
@@ -74,7 +74,7 @@ export class MemStorage implements IStorage {
         launchDate: "2003-06-10",
         maxSol: 2210,
         maxDate: "2010-03-22",
-        totalPhotos: 0,
+        totalPhotos: 1623,
         location: "Gusev Crater",
         lastUpdated: new Date(),
       },
@@ -82,6 +82,57 @@ export class MemStorage implements IStorage {
 
     defaultRovers.forEach(rover => {
       this.rovers.set(rover.name, rover);
+    });
+    
+    // Initialize mock photos for demo
+    this.initializeMockPhotos();
+  }
+
+  private initializeMockPhotos() {
+    const mockPhotos = [
+      {
+        id: "1001",
+        roverId: "perseverance",
+        roverName: "perseverance",
+        sol: 4156,
+        earthDate: "2024-12-22",
+        imgSrc: "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/04156/ids/fdr/browse/fcam/FLF_4156_0745678901_123FDR_N0560000FHAZ00323_01_295J01_1200.jpg",
+        cameraId: 20,
+        cameraName: "FHAZ",
+        cameraFullName: "Front Hazard Avoidance Camera",
+        metadata: null,
+      },
+      {
+        id: "1002", 
+        roverId: "perseverance",
+        roverName: "perseverance",
+        sol: 4156,
+        earthDate: "2024-12-22",
+        imgSrc: "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/04156/ids/fdr/browse/mcam/MLF_4156_0745678901_456FDR_N0560000MCAM05523_02_395J02_1200.jpg",
+        cameraId: 34,
+        cameraName: "MASTCAM",
+        cameraFullName: "Mastcam-Z Left",
+        metadata: null,
+      },
+      {
+        id: "1003",
+        roverId: "curiosity", 
+        roverName: "curiosity",
+        sol: 4400,
+        earthDate: "2024-12-22",
+        imgSrc: "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/04400/opgs/edr/fcam/FLB_740567891_EDR_F0981234FHAZ00323M_.JPG",
+        cameraId: 15,
+        cameraName: "FHAZ",
+        cameraFullName: "Front Hazard Avoidance Camera",
+        metadata: null,
+      }
+    ];
+
+    mockPhotos.forEach(photo => {
+      this.photos.set(photo.id, {
+        ...photo,
+        createdAt: new Date(),
+      });
     });
   }
 

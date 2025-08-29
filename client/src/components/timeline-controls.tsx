@@ -77,55 +77,97 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
   }
 
   return (
-    <div className="bg-card border-t border-border p-4" data-testid="timeline-controls">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-4">
-          <h3 className="text-lg font-semibold">Mission Timeline</h3>
-          <div className="flex items-center space-x-2 text-sm">
-            <Button
-              variant={timelineMode === "sol" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setTimelineMode("sol")}
-              data-testid="button-timeline-sol"
+    <div className="bg-card/50 backdrop-blur border-t border-border p-4" data-testid="timeline-controls">
+      {/* Mission Environment Cards */}
+      <div className="grid grid-cols-6 gap-4 mb-6">
+        {/* Distance from Sun */}
+        <Card className="bg-muted/30 border-border/50">
+          <CardContent className="p-3 text-center">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Distance from Sun</p>
+            <p className="text-lg font-mono font-bold text-foreground">143.495.712</p>
+            <p className="text-xs text-primary font-medium">MI KM</p>
+          </CardContent>
+        </Card>
+
+        {/* Light Time */}
+        <Card className="bg-muted/30 border-border/50">
+          <CardContent className="p-3 text-center">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">One way light time to sun</p>
+            <p className="text-lg font-mono font-bold text-foreground">12.838551</p>
+            <p className="text-xs text-primary font-medium">MINS</p>
+          </CardContent>
+        </Card>
+
+        {/* Length of Year */}
+        <Card className="bg-muted/30 border-border/50">
+          <CardContent className="p-3 text-center">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Length of Year</p>
+            <p className="text-lg font-mono font-bold text-foreground">687</p>
+            <p className="text-xs text-primary font-medium">EARTH DAYS</p>
+          </CardContent>
+        </Card>
+
+        {/* Planet Type */}
+        <Card className="bg-muted/30 border-border/50">
+          <CardContent className="p-3 text-center">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Planet Type</p>
+            <p className="text-lg font-mono font-bold text-foreground">TERRESTRIAL</p>
+          </CardContent>
+        </Card>
+
+        {/* Current Sol */}
+        <Card className="bg-primary/20 border-primary/50">
+          <CardContent className="p-3 text-center">
+            <p className="text-xs text-primary/80 uppercase tracking-wide mb-1">Mission Sol</p>
+            <p className="text-lg font-mono font-bold text-primary" data-testid="text-selected-sol">{selectedSol}</p>
+            <p className="text-xs text-primary/80 font-medium">CURRENT</p>
+          </CardContent>
+        </Card>
+
+        {/* Rover Status */}
+        <Card className={`${currentRover.status === 'active' ? 'bg-chart-2/20 border-chart-2/50' : 'bg-muted/30 border-border/50'}`}>
+          <CardContent className="p-3 text-center">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Rover Status</p>
+            <Badge 
+              variant={currentRover.status === "active" ? "default" : "secondary"}
+              className={`font-mono font-semibold text-xs ${currentRover.status === 'active' ? 'bg-chart-2 text-chart-2-foreground' : ''}`}
+              data-testid="badge-mission-status"
             >
-              Sol View
+              {currentRover.status === 'active' ? 'OPERATIONAL' : 'OFFLINE'}
+            </Badge>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Timeline Slider */}
+      <div className="relative mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Mission Timeline</h3>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handlePlay}
+              data-testid="button-play-timeline"
+              className="text-muted-foreground hover:text-primary"
+            >
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </Button>
             <Button
-              variant={timelineMode === "earth" ? "default" : "outline"}
+              variant="ghost"
               size="sm"
-              onClick={() => setTimelineMode("earth")}
-              data-testid="button-timeline-earth"
+              onClick={handleReset}
+              data-testid="button-reset-timeline"
+              className="text-muted-foreground hover:text-primary"
             >
-              Earth Date
+              <RotateCcw className="w-4 h-4" />
             </Button>
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePlay}
-            data-testid="button-play-timeline"
-          >
-            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            data-testid="button-reset-timeline"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Timeline Slider */}
-      <div className="relative mb-6">
         <div className="flex items-center space-x-4">
-          <div className="text-sm text-muted-foreground">
-            <span data-testid="text-timeline-start">Sol 1</span>
+          <div className="text-xs text-muted-foreground font-mono">
+            <span data-testid="text-timeline-start">SOL 1</span>
           </div>
           
           <div className="flex-1 relative">
@@ -138,92 +180,74 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
               className="w-full"
               data-testid="slider-timeline"
             />
-            
-            {/* Timeline markers */}
-            <div className="absolute top-6 left-0 w-full flex justify-between text-xs text-muted-foreground">
-              <div className="flex flex-col items-center">
-                <div className="w-1 h-4 bg-primary rounded-full mb-1"></div>
-                <span>Landing</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-1 h-4 bg-chart-3 rounded-full mb-1"></div>
-                <span>First Sample</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-1 h-4 bg-chart-2 rounded-full mb-1"></div>
-                <span>Flight Zone</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-1 h-4 bg-chart-1 rounded-full mb-1"></div>
-                <span>Current</span>
-              </div>
-            </div>
           </div>
           
-          <div className="text-sm text-muted-foreground">
-            <span data-testid="text-timeline-current">Sol {currentRover.maxSol}</span>
+          <div className="text-xs text-muted-foreground font-mono">
+            <span data-testid="text-timeline-current">SOL {currentRover.maxSol}</span>
           </div>
         </div>
       </div>
 
-      {/* Timeline Details */}
-      <div className="grid grid-cols-4 gap-4 text-sm">
-        <Card>
+      {/* Mission Details */}
+      <div className="grid grid-cols-4 gap-4">
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-muted-foreground">Selected Sol</span>
-              <span className="font-mono font-semibold" data-testid="text-selected-sol">{selectedSol}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Earth Date</span>
-              <span className="font-mono" data-testid="text-selected-earth-date">{formatEarthDate(selectedSol)}</span>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Earth Date</span>
+                <span className="font-mono text-foreground" data-testid="text-selected-earth-date">{formatEarthDate(selectedSol)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Photos</span>
+                <span className="font-mono text-foreground" data-testid="text-photos-count">{photos.length}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-muted-foreground">Photos Available</span>
-              <span className="font-mono font-semibold" data-testid="text-photos-count">{photos.length}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Cameras Active</span>
-              <span className="font-mono" data-testid="text-cameras-active">
-                {new Set(photos.map(p => p.cameraId)).size}
-              </span>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Cameras</span>
+                <span className="font-mono text-foreground" data-testid="text-cameras-active">
+                  {new Set(photos.map(p => p.cameraId)).size}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Last Contact</span>
+                <span className="font-mono text-foreground" data-testid="text-last-contact">{getLastContact()}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-muted-foreground">Distance Driven</span>
-              <span className="font-mono font-semibold" data-testid="text-distance-driven">{getDistanceDriven()}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Total Distance</span>
-              <span className="font-mono" data-testid="text-total-distance">{getTotalDistance()}</span>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Distance Driven</span>
+                <span className="font-mono text-foreground" data-testid="text-distance-driven">{getDistanceDriven()}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Total Distance</span>
+                <span className="font-mono text-foreground" data-testid="text-total-distance">{getTotalDistance()}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-muted-foreground">Status</span>
-              <Badge 
-                variant={currentRover.status === "active" ? "default" : "secondary"}
-                className="font-mono font-semibold"
-                data-testid="badge-mission-status"
-              >
-                {currentRover.status.toUpperCase()}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Last Contact</span>
-              <span className="font-mono" data-testid="text-last-contact">{getLastContact()}</span>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Location</span>
+                <span className="font-mono text-foreground">{currentRover.location}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground uppercase">Mode</span>
+                <span className="font-mono text-chart-2">AUTO</span>
+              </div>
             </div>
           </CardContent>
         </Card>

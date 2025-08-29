@@ -5,6 +5,7 @@ import { RoverSidebar } from "@/components/rover-sidebar";
 import { MarsMap } from "@/components/mars-map";
 import { TimelineControls } from "@/components/timeline-controls";
 import { ImageLightbox } from "@/components/image-lightbox";
+import { SensorDashboard } from "@/components/sensor-dashboard";
 import type { Rover, RoverPhoto } from "@/types/rover";
 
 export default function Home() {
@@ -63,27 +64,39 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       {/* Header */}
-      <header className="bg-card border-b border-border px-6 py-4" data-testid="header-main">
+      <header className="bg-card/50 backdrop-blur border-b border-border px-6 py-3" data-testid="header-main">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg">
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary rounded flex items-center justify-center text-primary-foreground font-bold text-sm">
                 NASA
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Mars Rover Mission Control</h1>
-                <p className="text-muted-foreground text-sm">Jet Propulsion Laboratory (JPL)</p>
+                <h1 className="text-xl font-bold text-foreground tracking-wide">MARS</h1>
+                <p className="text-primary text-xs font-medium">The Red Planet</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-6 text-sm">
+              <div className="flex items-center space-x-4">
+                <span className="text-primary font-medium">ROVER:</span>
+                <span className="text-foreground font-mono uppercase">{selectedRover}</span>
+              </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-muted-foreground">DASHBOARD</span>
+                <span className="text-muted-foreground">ENVIRONMENT</span>
+                <span className="text-muted-foreground">MANAGEMENT CONTROL SYSTEM</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6 text-sm">
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Mission Time (UTC)</p>
-              <p className="text-lg font-mono font-semibold" data-testid="text-current-time">{currentTime}</p>
+              <p className="text-xs text-muted-foreground uppercase">Mission Day</p>
+              <p className="text-sm font-mono font-semibold text-foreground">SOL</p>
+              <p className="text-lg font-mono font-bold text-primary" data-testid="text-current-sol">{selectedSol}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Sol</p>
-              <p className="text-lg font-mono font-semibold" data-testid="text-current-sol">{selectedSol}</p>
+              <p className="text-xs text-muted-foreground uppercase">Time</p>
+              <p className="text-lg font-mono font-semibold text-foreground" data-testid="text-current-time">{currentTime}</p>
             </div>
           </div>
         </div>
@@ -99,6 +112,14 @@ export default function Home() {
 
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
+          {/* Sensor Dashboard */}
+          <div className="bg-card/30 backdrop-blur border-b border-border p-4">
+            <SensorDashboard
+              currentRover={currentRover}
+              selectedSol={selectedSol}
+            />
+          </div>
+
           {/* Map */}
           <div className="flex-1 relative">
             <MarsMap
