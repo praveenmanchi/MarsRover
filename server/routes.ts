@@ -202,6 +202,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get weather data for Mars
+  app.get("/api/weather/:rover", async (req, res) => {
+    try {
+      const { rover } = req.params;
+      // Mock weather data since NASA Insight mission ended
+      const weatherData = {
+        sol: 4100,
+        temperature: {
+          high: -10,
+          low: -78,
+          unit: "C"
+        },
+        pressure: {
+          value: 850,
+          unit: "Pa"
+        },
+        wind: {
+          speed: 5.2,
+          direction: "SW",
+          unit: "m/s"
+        },
+        season: "Northern Winter",
+        dustStorm: false,
+        atmosphericOpacity: 0.4
+      };
+      res.json(weatherData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch weather data" });
+    }
+  });
+
+  // Get geological data for a location
+  app.get("/api/geology/:rover", async (req, res) => {
+    try {
+      const { rover } = req.params;
+      const { lat, lon } = req.query;
+      
+      const geologicalData = {
+        location: { lat: parseFloat(lat as string) || -5.4, lon: parseFloat(lon as string) || 137.8 },
+        rockType: "Sedimentary",
+        composition: {
+          silica: 45.2,
+          iron: 18.7,
+          calcium: 8.3,
+          magnesium: 5.1,
+          sulfur: 3.9
+        },
+        age: "3.5 billion years",
+        waterEvidence: true,
+        organicCompounds: false,
+        elevation: -4500,
+        description: "Ancient lake bed sediments showing evidence of past water activity"
+      };
+      
+      res.json(geologicalData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch geological data" });
+    }
+  });
+
+  // Get mission timeline events
+  app.get("/api/timeline/:rover", async (req, res) => {
+    try {
+      const { rover } = req.params;
+      
+      const timelineEvents = [
+        {
+          sol: 0,
+          date: "2012-08-06",
+          event: "Landing in Gale Crater",
+          type: "milestone",
+          coordinates: [-4.5895, 137.4417],
+          description: "Successfully landed using sky crane system"
+        },
+        {
+          sol: 31,
+          date: "2012-09-06",
+          event: "First drill sample at Rocknest",
+          type: "science",
+          coordinates: [-4.5901, 137.4420],
+          description: "Analyzed Martian soil composition"
+        },
+        {
+          sol: 324,
+          date: "2013-05-30",
+          event: "Discovery of ancient water evidence",
+          type: "discovery",
+          coordinates: [-4.5915, 137.4435],
+          description: "Found evidence of past flowing water"
+        },
+        {
+          sol: 753,
+          date: "2014-09-24",
+          event: "Reached Mount Sharp base",
+          type: "milestone",
+          coordinates: [-4.6852, 137.3959],
+          description: "Began ascent of central mountain"
+        },
+        {
+          sol: 2780,
+          date: "2020-01-15",
+          event: "Organic molecule detection",
+          type: "discovery",
+          coordinates: [-4.7234, 137.3821],
+          description: "Detected complex organic compounds in rock samples"
+        }
+      ];
+      
+      res.json({ events: timelineEvents });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch timeline data" });
+    }
+  });
+
   // Clear photo cache for a rover
   app.delete("/api/rovers/:name/cache", async (req, res) => {
     try {
