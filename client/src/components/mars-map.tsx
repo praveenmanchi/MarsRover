@@ -369,8 +369,8 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         )}
       </div>
 
-      {/* FUI Metrics Panel - Responsive */}
-      <div className="absolute bottom-4 left-4 bg-black/80 border border-cyan-400/40 p-4 w-72 z-10" data-testid="overlay-metrics">
+      {/* FUI Metrics Panel - Fixed Position */}
+      <div className="absolute bottom-20 left-4 bg-black/80 border border-cyan-400/40 p-4 min-w-[300px] z-10" data-testid="overlay-metrics">
         <div className="border-l-2 border-cyan-400 pl-3 mb-4">
           <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">SENSOR DATA</h3>
           <div className="text-xs font-mono text-cyan-400/60">REAL-TIME MONITORING</div>
@@ -422,8 +422,8 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         </div>
       </div>
 
-      {/* Camera Views Panel - Responsive */}
-      <div className="absolute top-4 right-4 lg:right-96 bg-black/80 border border-cyan-400/40 p-4 w-72 lg:w-80 z-10" data-testid="camera-views">
+      {/* Camera Views Panel - Made Functional */}
+      <div className="absolute top-4 right-96 bg-black/80 border border-cyan-400/40 p-4 w-80 z-10" data-testid="camera-views">
         <div className="border-l-2 border-cyan-400 pl-3 mb-4">
           <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">CAMERA FEEDS</h3>
           <div className="text-xs font-mono text-cyan-400/60">MULTIPLE ANGLES</div>
@@ -488,35 +488,11 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         </div>
       </div>
 
-      {/* Compact Location & Controls Panel */}
-      <div className="absolute top-4 left-4 bg-black/95 border border-cyan-400/40 rounded-lg p-4 w-72 z-20" data-testid="map-controls">
-        {/* Location Header */}
-        <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-cyan-400/30">
-          <div className="w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></div>
-          <div>
-            <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">CURIOSITY ROVER</h3>
-            <div className="text-xs font-mono text-cyan-400/60">Gale Crater, Mars</div>
-          </div>
-        </div>
-        
-        {/* Mission Stats */}
-        <div className="grid grid-cols-2 gap-3 mb-4 text-xs font-mono">
-          <div className="bg-cyan-400/10 border border-cyan-400/30 p-2 rounded">
-            <div className="text-cyan-400/60">CURRENT SOL</div>
-            <div className="text-cyan-400 font-bold">{selectedSol}</div>
-          </div>
-          <div className="bg-green-400/10 border border-green-400/30 p-2 rounded">
-            <div className="text-green-400/60">DISTANCE</div>
-            <div className="text-green-400 font-bold">29.87 km</div>
-          </div>
-          <div className="bg-orange-400/10 border border-orange-400/30 p-2 rounded">
-            <div className="text-orange-400/60">STATUS</div>
-            <div className="text-orange-400 font-bold">ACTIVE</div>
-          </div>
-          <div className="bg-purple-400/10 border border-purple-400/30 p-2 rounded">
-            <div className="text-purple-400/60">SAMPLES</div>
-            <div className="text-purple-400 font-bold">28</div>
-          </div>
+      {/* NASA-Style Map Controls Panel */}
+      <div className="absolute top-4 left-4 bg-black/90 border border-gray-400/40 p-4 w-80 z-20" data-testid="map-controls">
+        <div className="border-l-2 border-gray-400 pl-3 mb-4">
+          <h3 className="text-sm font-mono font-bold text-white tracking-wider">CURIOSITY'S LOCATION</h3>
+          <div className="text-xs font-mono text-gray-400">Latest Drive: Sol {selectedSol} | Total Distance 29.87 km</div>
         </div>
         
         <div className="space-y-3">
