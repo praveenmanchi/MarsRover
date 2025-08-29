@@ -264,7 +264,7 @@ export function EnhancedUILayout({ leftPanels, rightPanels, children, className 
                   </TabsList>
                   
                   <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence>
                       {leftPanels.map((panel, index) => (
                         <TabsContent key={index} value={index.toString()} className="mt-0">
                           <motion.div
@@ -393,7 +393,7 @@ export function EnhancedUILayout({ leftPanels, rightPanels, children, className 
                   </TabsList>
                   
                   <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence>
                       {rightPanels.map((panel, index) => (
                         <TabsContent key={index} value={index.toString()} className="mt-0">
                           <motion.div

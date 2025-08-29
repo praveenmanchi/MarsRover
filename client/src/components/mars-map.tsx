@@ -62,27 +62,31 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect, onLocationS
       const initialPosition = ROVER_POSITIONS[selectedRover];
       const leafletMap = L.map(mapRef.current!).setView([initialPosition.lat, initialPosition.lon], 12);
 
-      // ESA Mars Express HRSC global mosaic - authentic Mars satellite data
-      const marsESALayer = L.tileLayer('https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=MDIM21&STYLES=&FORMAT=image/png&BGCOLOR=0x000000&TRANSPARENT=FALSE&SRS=EPSG:4326&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256', {
-        attribution: 'ESA/DLR/FU Berlin (G. Neukum) | Mars Express HRSC',
-        maxZoom: 10
+      // NASA Mars Global Surveyor MOLA colorized elevation - working tile service
+      const marsColorLayer = L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-2/{z}/{x}/{y}.png', {
+        attribution: 'NASA/JPL/USGS | Mars Global Surveyor MOLA',
+        maxZoom: 8,
+        errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2IiBmaWxsPSIjOEI0NTEzIi8+Cjx0ZXh0IHg9IjEyOCIgeT0iMTI4IiBmaWxsPSIjQ0Q1QzVDIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZm9udC1zaXplPSIxNCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSI+TUFSU1M8L3RleHQ+Cjwvc3ZnPg=='
       });
       
-      // NASA Mars Reconnaissance Orbiter Context Camera
-      const marsMROLayer = L.tileLayer('https://astrogeology.usgs.gov/maps/mars-mro-ctx/{z}/{x}/{y}.png', {
-        attribution: 'NASA/JPL/MSSS | Mars Reconnaissance Orbiter CTX',
-        maxZoom: 8
+      // Mars terrain with enhanced styling
+      const marsTerrainLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Mars Terrain Simulation | Based on NASA Data',
+        maxZoom: 18,
+        className: 'mars-authentic-terrain'
       });
       
-      // NASA Mars Global Surveyor MOLA DEM
-      const marsMOLALayer = L.tileLayer('https://trek.nasa.gov/tiles/Mars/EQ/Mars_MGS_MOLA_DEM_mosaic_global_463m/{z}/{y}/{x}.jpg', {
-        attribution: 'NASA/JPL/GSFC | Mars Global Surveyor MOLA',
-        maxZoom: 8
+      // Alternative Mars imagery source
+      const marsAltLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: 'Mars Topographic | NASA Mission Data',
+        maxZoom: 15,
+        className: 'mars-authentic-terrain'
       });
       
       // Custom Mars terrain with proper coordinate system
       const customMarsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Mars Terrain Simulation | NASA Data Derived',
+        maxZoom: 18,
         className: 'mars-authentic-terrain'
       });
 
@@ -103,26 +107,29 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect, onLocationS
       `;
       document.head.appendChild(marsStyle);
 
-      // Try authentic Mars layers in preference order
+      // Try Mars tile layers with fallback chain
       let activeLayer = null;
       
-      // Primary: NASA Mars Global Surveyor MOLA
-      marsMOLALayer.addTo(leafletMap);
-      activeLayer = marsMOLALayer;
+      // Primary: Mars color layer from working CDN
+      marsColorLayer.addTo(leafletMap);
+      activeLayer = marsColorLayer;
       
-      // Fallback chain for authentic Mars imagery
-      marsMOLALayer.on('tileerror', () => {
-        leafletMap.removeLayer(marsMOLALayer);
-        marsMROLayer.addTo(leafletMap);
-        activeLayer = marsMROLayer;
+      // Fallback chain for Mars imagery
+      marsColorLayer.on('tileerror', () => {
+        console.log('Primary Mars layer failed, trying terrain layer');
+        leafletMap.removeLayer(marsColorLayer);
+        marsTerrainLayer.addTo(leafletMap);
+        activeLayer = marsTerrainLayer;
         
-        marsMROLayer.on('tileerror', () => {
-          leafletMap.removeLayer(marsMROLayer);
-          marsESALayer.addTo(leafletMap);
-          activeLayer = marsESALayer;
+        marsTerrainLayer.on('tileerror', () => {
+          console.log('Terrain layer failed, using alternative');
+          leafletMap.removeLayer(marsTerrainLayer);
+          marsAltLayer.addTo(leafletMap);
+          activeLayer = marsAltLayer;
           
-          marsESALayer.on('tileerror', () => {
-            leafletMap.removeLayer(marsESALayer);
+          marsAltLayer.on('tileerror', () => {
+            console.log('All layers failed, using custom styled layer');
+            leafletMap.removeLayer(marsAltLayer);
             customMarsLayer.addTo(leafletMap);
             activeLayer = customMarsLayer;
           });

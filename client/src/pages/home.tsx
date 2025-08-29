@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRovers } from "@/lib/nasa-api";
 import { RoverSidebar } from "@/components/rover-sidebar";
-import { MarsMap } from "@/components/mars-map";
+import { MarsMapFixed as MarsMap } from "@/components/mars-map-fixed";
 import { TimelineControls } from "@/components/timeline-controls";
 import { ImageLightbox } from "@/components/image-lightbox";
 import { WeatherPanel } from "@/components/weather-panel";
