@@ -109,11 +109,6 @@ export default function Home() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <div className="flex items-center space-x-4">
-                <span className="text-muted-foreground">DASHBOARD</span>
-                <span className="text-muted-foreground">ENVIRONMENT</span>
-                <span className="text-muted-foreground">MANAGEMENT CONTROL SYSTEM</span>
-              </div>
             </div>
           </div>
           <div className="flex items-center space-x-6 text-sm">

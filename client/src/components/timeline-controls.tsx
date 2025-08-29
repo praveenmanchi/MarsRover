@@ -78,63 +78,79 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
 
   return (
     <div className="bg-card/50 backdrop-blur border-t border-border p-4" data-testid="timeline-controls">
-      {/* Mission Environment Cards */}
-      <div className="grid grid-cols-6 gap-4 mb-6">
-        {/* Distance from Sun */}
-        <Card className="bg-muted/30 border-border/50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Distance from Sun</p>
-            <p className="text-lg font-mono font-bold text-foreground">143.495.712</p>
-            <p className="text-xs text-primary font-medium">MI KM</p>
+      {/* Mission Details - Above Timeline */}
+      <div className="grid grid-cols-8 gap-3 mb-6">
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Earth Date</span>
+              <p className="font-mono text-foreground font-semibold" data-testid="text-selected-earth-date">{formatEarthDate(selectedSol)}</p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Light Time */}
-        <Card className="bg-muted/30 border-border/50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">One way light time to sun</p>
-            <p className="text-lg font-mono font-bold text-foreground">12.838551</p>
-            <p className="text-xs text-primary font-medium">MINS</p>
+        
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Photos</span>
+              <p className="font-mono text-foreground font-semibold" data-testid="text-photos-count">{photos.length}</p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Length of Year */}
-        <Card className="bg-muted/30 border-border/50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Length of Year</p>
-            <p className="text-lg font-mono font-bold text-foreground">687</p>
-            <p className="text-xs text-primary font-medium">EARTH DAYS</p>
+        
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Cameras</span>
+              <p className="font-mono text-foreground font-semibold" data-testid="text-cameras-active">
+                {new Set(photos.map(p => p.cameraId)).size}
+              </p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Planet Type */}
-        <Card className="bg-muted/30 border-border/50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Planet Type</p>
-            <p className="text-lg font-mono font-bold text-foreground">TERRESTRIAL</p>
+        
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Last Contact</span>
+              <p className="font-mono text-foreground font-semibold" data-testid="text-last-contact">{getLastContact()}</p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Current Sol */}
-        <Card className="bg-primary/20 border-primary/50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-primary/80 uppercase tracking-wide mb-1">Mission Sol</p>
-            <p className="text-lg font-mono font-bold text-primary" data-testid="text-selected-sol">{selectedSol}</p>
-            <p className="text-xs text-primary/80 font-medium">CURRENT</p>
+        
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Distance Driven</span>
+              <p className="font-mono text-foreground font-semibold" data-testid="text-distance-driven">{getDistanceDriven()}</p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Rover Status */}
-        <Card className={`${currentRover.status === 'active' ? 'bg-chart-2/20 border-chart-2/50' : 'bg-muted/30 border-border/50'}`}>
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Rover Status</p>
-            <Badge 
-              variant={currentRover.status === "active" ? "default" : "secondary"}
-              className={`font-mono font-semibold text-xs ${currentRover.status === 'active' ? 'bg-chart-2 text-chart-2-foreground' : ''}`}
-              data-testid="badge-mission-status"
-            >
-              {currentRover.status === 'active' ? 'OPERATIONAL' : 'OFFLINE'}
-            </Badge>
+        
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Total Distance</span>
+              <p className="font-mono text-foreground font-semibold" data-testid="text-total-distance">{getTotalDistance()}</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Location</span>
+              <p className="font-mono text-foreground font-semibold">{currentRover.location}</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-3">
+            <div className="space-y-1 text-xs">
+              <span className="text-muted-foreground uppercase">Mode</span>
+              <p className="font-mono text-chart-2 font-semibold">AUTO</p>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -188,70 +204,6 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
         </div>
       </div>
 
-      {/* Mission Details */}
-      <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Earth Date</span>
-                <span className="font-mono text-foreground" data-testid="text-selected-earth-date">{formatEarthDate(selectedSol)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Photos</span>
-                <span className="font-mono text-foreground" data-testid="text-photos-count">{photos.length}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Cameras</span>
-                <span className="font-mono text-foreground" data-testid="text-cameras-active">
-                  {new Set(photos.map(p => p.cameraId)).size}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Last Contact</span>
-                <span className="font-mono text-foreground" data-testid="text-last-contact">{getLastContact()}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Distance Driven</span>
-                <span className="font-mono text-foreground" data-testid="text-distance-driven">{getDistanceDriven()}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Total Distance</span>
-                <span className="font-mono text-foreground" data-testid="text-total-distance">{getTotalDistance()}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Location</span>
-                <span className="font-mono text-foreground">{currentRover.location}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground uppercase">Mode</span>
-                <span className="font-mono text-chart-2">AUTO</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }
