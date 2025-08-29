@@ -232,10 +232,42 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
 
   const getEnvironmentData = (roverName: string) => {
     const envData: Record<string, any> = {
-      perseverance: { temperature: "-18°C", dustLevel: "Moderate", pressure: "12.4 Pa", windSpeed: "15 m/s" },
-      curiosity: { temperature: "-12°C", dustLevel: "Low", pressure: "8.2 Pa", windSpeed: "12 m/s" },
-      opportunity: { temperature: "-25°C", dustLevel: "High", pressure: "6.1 Pa", windSpeed: "20 m/s" },
-      spirit: { temperature: "-22°C", dustLevel: "High", pressure: "5.8 Pa", windSpeed: "18 m/s" }
+      perseverance: { 
+        temperature: "-18°C", 
+        dustLevel: "Moderate", 
+        pressure: "12.4 Pa", 
+        windSpeed: "15 m/s",
+        battery: "88%",
+        connection: "Stable",
+        health: "Nominal"
+      },
+      curiosity: { 
+        temperature: "-12°C", 
+        dustLevel: "Low", 
+        pressure: "8.2 Pa", 
+        windSpeed: "12 m/s",
+        battery: "92%",
+        connection: "Stable", 
+        health: "Nominal"
+      },
+      opportunity: { 
+        temperature: "-25°C", 
+        dustLevel: "High", 
+        pressure: "6.1 Pa", 
+        windSpeed: "20 m/s",
+        battery: "0%",
+        connection: "Lost",
+        health: "Offline"
+      },
+      spirit: { 
+        temperature: "-22°C", 
+        dustLevel: "High", 
+        pressure: "5.8 Pa", 
+        windSpeed: "18 m/s",
+        battery: "0%",
+        connection: "Lost",
+        health: "Offline"
+      }
     };
     return envData[roverName] || envData.perseverance;
   };
@@ -260,36 +292,76 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         )}
       </div>
 
-      {/* Transparent Metrics Overlay */}
-      <div className="absolute top-4 left-4 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg p-4 text-white" data-testid="overlay-metrics">
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center space-x-2">
-            <Thermometer className="w-4 h-4 text-orange-400" />
-            <div>
-              <p className="text-xs opacity-80">Temperature</p>
-              <p className="font-mono">{envData.temperature}</p>
+      {/* Consolidated Environmental Metrics Overlay */}
+      <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md border border-white/30 rounded-lg p-4 text-white min-w-[280px]" data-testid="overlay-metrics">
+        <div className="flex items-center space-x-2 mb-4">
+          <Thermometer className="w-5 h-5 text-blue-400" />
+          <h3 className="text-sm font-semibold tracking-wide">MARS ENVIRONMENTAL DATA</h3>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Temperature</span>
             </div>
+            <span className="font-mono text-sm text-blue-400 font-medium">{envData.temperature}</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <Wind className="w-4 h-4 text-blue-400" />
-            <div>
-              <p className="text-xs opacity-80">Dust Level</p>
-              <p className="font-mono">{envData.dustLevel}</p>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Dust Level</span>
             </div>
+            <span className="font-mono text-sm text-yellow-400 font-medium">{envData.dustLevel}</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-red-400 rounded-full"></div>
-            <div>
-              <p className="text-xs opacity-80">Pressure</p>
-              <p className="font-mono">{envData.pressure}</p>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Pressure</span>
             </div>
+            <span className="font-mono text-sm text-red-400 font-medium">{envData.pressure}</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-green-400 rounded-full"></div>
-            <div>
-              <p className="text-xs opacity-80">Wind Speed</p>
-              <p className="font-mono">{envData.windSpeed}</p>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Wind Speed</span>
             </div>
+            <span className="font-mono text-sm text-green-400 font-medium">{envData.windSpeed}</span>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Sol</span>
+            </div>
+            <span className="font-mono text-sm text-purple-400 font-medium">{selectedSol}</span>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Battery</span>
+            </div>
+            <span className="font-mono text-sm text-cyan-400 font-medium">{envData.battery}</span>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Connection</span>
+            </div>
+            <span className="font-mono text-sm text-pink-400 font-medium">{envData.connection}</span>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+              <span className="text-xs font-medium opacity-90">Health</span>
+            </div>
+            <span className="font-mono text-sm text-orange-400 font-medium">{envData.health}</span>
           </div>
         </div>
       </div>

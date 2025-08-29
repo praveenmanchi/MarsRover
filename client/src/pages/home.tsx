@@ -5,7 +5,6 @@ import { RoverSidebar } from "@/components/rover-sidebar";
 import { MarsMap } from "@/components/mars-map";
 import { TimelineControls } from "@/components/timeline-controls";
 import { ImageLightbox } from "@/components/image-lightbox";
-import { SensorDashboard } from "@/components/sensor-dashboard";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -142,14 +141,6 @@ export default function Home() {
       <div className="flex flex-col h-screen overflow-hidden">
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
-          {/* Sensor Dashboard */}
-          <div className="bg-card/30 backdrop-blur border-b border-border p-4">
-            <SensorDashboard
-              currentRover={currentRover}
-              selectedSol={selectedSol}
-            />
-          </div>
-
           {/* Map */}
           <div className="flex-1 relative">
             <MarsMap
