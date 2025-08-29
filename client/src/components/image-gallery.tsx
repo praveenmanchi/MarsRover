@@ -70,18 +70,20 @@ export function ImageGallery({ photos, isLoading, onPhotoSelect, selectedSol }: 
           {displayPhotos.map((photo, index) => (
             <div
               key={photo.id}
-              className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+              className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
               onClick={() => onPhotoSelect(photo)}
               data-testid={`image-gallery-${index}`}
             >
               <img 
-                src={photo.imgSrc} 
-                alt={`Mars surface - ${photo.cameraFullName}`}
+                src={photo.imgSrc || photo.img_src} 
+                alt={`Mars surface - ${photo.cameraFullName || photo.camera?.full_name}`}
                 className="w-full h-full object-cover"
+                loading="lazy"
                 onError={(e) => {
-                  // Fallback for broken images
+                  // Use Mars terrain placeholder for broken images
                   const target = e.target as HTMLImageElement;
-                  target.src = `https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300`;
+                  target.src = 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG';
+                  target.onerror = null; // Prevent infinite loop
                 }}
               />
             </div>

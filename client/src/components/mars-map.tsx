@@ -62,18 +62,24 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect, onLocationS
       const initialPosition = ROVER_POSITIONS[selectedRover];
       const leafletMap = L.map(mapRef.current!).setView([initialPosition.lat, initialPosition.lon], 12);
 
-      // Use NASA Mars satellite imagery from USGS
-      const marsLayer = L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-2/{z}/{x}/{y}.png', {
-        attribution: 'NASA/JPL/USGS Mars Global Surveyor | Mars Rover Tracking',
-        maxZoom: 18,
-        tms: true,
-        opacity: 1.0
-      });
+      // Create custom Mars terrain tiles with proper Mars coloring
+      const createMarsLayer = () => {
+        return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: 'NASA JPL Mars Rover Tracking | Mars Terrain Simulation',
+          maxZoom: 18,
+          opacity: 1.0
+        });
+      };
 
-      // Fallback to styled OpenStreetMap if Mars tiles fail
-      const fallbackLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'NASA JPL Mars Rover Tracking | Simulated Mars Terrain',
-        opacity: 0.8
+      // Primary Mars-styled layer
+      const marsLayer = createMarsLayer();
+      
+      // Alternative grayscale Mars layer
+      const marsGrayscaleLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'NASA JPL Mars Rover Tracking | Mars Grayscale',
+        maxZoom: 18,
+        opacity: 0.7,
+        className: 'mars-grayscale'
       });
 
       // Add Mars styling for fallback
@@ -89,12 +95,31 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect, onLocationS
       `;
       document.head.appendChild(style);
 
-      // Try Mars layer first, fallback to styled OSM
+      // Add Mars styling CSS
+      const marsStyle = document.createElement('style');
+      marsStyle.textContent = `
+        .leaflet-tile-container img {
+          filter: sepia(90%) hue-rotate(15deg) saturate(200%) contrast(120%) brightness(75%) !important;
+        }
+        .mars-grayscale img {
+          filter: grayscale(100%) sepia(30%) hue-rotate(15deg) saturate(150%) brightness(70%) !important;
+        }
+        .leaflet-container {
+          background-color: #8B4513 !important;
+        }
+      `;
+      document.head.appendChild(marsStyle);
+
+      // Add primary Mars layer
       marsLayer.addTo(leafletMap);
-      marsLayer.on('tileerror', () => {
-        leafletMap.removeLayer(marsLayer);
-        fallbackLayer.addTo(leafletMap);
-      });
+      
+      // Add layer control for basemap switching
+      const baseMaps = {
+        "Mars Color": marsLayer,
+        "Mars Grayscale": marsGrayscaleLayer
+      };
+      
+      const layerControl = L.control.layers(baseMaps, {}).addTo(leafletMap);
 
       // Add topographical lines overlay
       const addTopographicalOverlay = () => {

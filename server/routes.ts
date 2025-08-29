@@ -148,13 +148,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (apiError) {
         // If NASA API fails, return fallback photos with sample data
         console.warn("NASA API error, using fallback data:", apiError);
+        // Provide actual Mars rover images as fallback
         const fallbackPhotos = [
           {
             id: `${Date.now()}-1`,
             sol: parseInt(sol as string) || 1000,
             camera: { name: camera || 'NAVCAM', full_name: 'Navigation Camera' },
             img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG',
-            earth_date: earth_date || '2015-05-30'
+            earth_date: earth_date || '2015-05-30',
+            rover: { name: name.charAt(0).toUpperCase() + name.slice(1) }
+          },
+          {
+            id: `${Date.now()}-2`,
+            sol: parseInt(sol as string) || 1000,
+            camera: { name: 'FHAZ', full_name: 'Front Hazard Avoidance Camera' },
+            img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fhaz/FLA_486265257EDR_F0481570FHAZ00323M_.JPG',
+            earth_date: earth_date || '2015-05-30',
+            rover: { name: name.charAt(0).toUpperCase() + name.slice(1) }
+          },
+          {
+            id: `${Date.now()}-3`,
+            sol: parseInt(sol as string) || 1000,
+            camera: { name: 'RHAZ', full_name: 'Rear Hazard Avoidance Camera' },
+            img_src: 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/rhaz/RLA_486265257EDR_F0481570RHAZ00323M_.JPG',
+            earth_date: earth_date || '2015-05-30',
+            rover: { name: name.charAt(0).toUpperCase() + name.slice(1) }
           }
         ];
         res.json({ photos: fallbackPhotos });

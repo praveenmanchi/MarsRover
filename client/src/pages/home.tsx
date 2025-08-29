@@ -116,8 +116,6 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen bg-black text-white font-mono ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-      {/* Day/Night and Environmental Overlays */}
-      <DayNightOverlay className="fixed top-4 left-4 w-64 z-30 hidden lg:block" />
       
       {/* FUI Header */}
       <header className={`bg-black/90 border-b border-cyan-500/30 px-6 py-2 ${isFullscreen ? 'hidden' : ''}`} data-testid="header-main">
@@ -192,26 +190,39 @@ export default function Home() {
             />
           </div>
 
-          {/* Advanced Control Panels - Desktop */}
-          <div className="absolute top-4 right-4 space-y-4 w-72 z-20">
+          {/* Top Right - Weather Panel */}
+          <div className="absolute top-4 right-4 w-64 z-20">
             <WeatherPanel rover={selectedRover} />
+          </div>
+
+          {/* Middle Right - Geological Analysis */}
+          <div className="absolute top-80 right-4 w-64 z-20">
             <GeologicalAnalysis 
               rover={selectedRover} 
               selectedLocation={selectedLocation || undefined}
             />
           </div>
 
-          {/* Left Side Panels */}
-          <div className="absolute top-4 left-80 space-y-4 w-80 z-20">
+          {/* Top Left - Day/Night Controls (moved from duplicate) */}
+          <div className="absolute top-4 left-4 w-64 z-20">
+            <DayNightOverlay />
+          </div>
+
+          {/* Bottom Left - Timeline */}
+          <div className="absolute bottom-20 left-4 w-80 z-20">
             <AnimatedTimeline 
               rover={selectedRover}
               onEventSelect={handleTimelineEvent}
             />
+          </div>
+
+          {/* Middle Left - 3D Terrain */}
+          <div className="absolute top-80 left-4 w-72 z-20">
             <TerrainViewer location={selectedLocation || { lat: -5.4, lon: 137.8 }} />
           </div>
 
-          {/* Bottom Right Tools */}
-          <div className="absolute bottom-20 right-4 w-64 z-20">
+          {/* Bottom Right - Export Tools */}
+          <div className="absolute bottom-20 right-4 w-56 z-20">
             <ExportControls 
               roverData={currentRover}
               currentPhotos={[]}
