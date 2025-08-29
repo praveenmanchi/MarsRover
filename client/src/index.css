@@ -130,6 +130,42 @@
   }
 }
 
+/* Enhanced Mars terrain styling */
+.mars-terrain-enhanced {
+  background: radial-gradient(ellipse at center, #CD5C0F 0%, #A0522D 35%, #8B4513 70%, #654321 100%);
+}
+
+/* Improved panel styling */
+.mission-panel {
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Smooth animations */
+.panel-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scrollbar styling for panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.3);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.5);
+}
+
 /* Mars-themed gradients */
 .mars-gradient {
   background: linear-gradient(135deg, hsl(15, 85%, 25%), hsl(25, 90%, 35%), hsl(15, 75%, 20%));

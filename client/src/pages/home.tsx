@@ -13,6 +13,7 @@ import { ExportControls } from "@/components/export-controls";
 import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 import { MobileControls } from "@/components/mobile-controls";
 import { DayNightOverlay } from "@/components/day-night-overlay";
+import { UILayout } from "@/components/ui-layout";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -179,8 +180,27 @@ export default function Home() {
       <div className={`flex flex-col ${isFullscreen ? 'h-screen' : 'h-screen'} overflow-hidden`}>
         {/* Desktop Layout */}
         <div className="hidden md:block flex-1 relative">
-          {/* Main Map */}
-          <div className="absolute inset-0">
+          <UILayout
+            leftPanels={[
+              <DayNightOverlay />,
+              <WeatherPanel rover={selectedRover} />,
+              <TerrainViewer location={selectedLocation || { lat: -5.4, lon: 137.8 }} />
+            ]}
+            rightPanels={[
+              <GeologicalAnalysis 
+                rover={selectedRover} 
+                selectedLocation={selectedLocation || undefined}
+              />,
+              <AnimatedTimeline 
+                rover={selectedRover}
+                onEventSelect={handleTimelineEvent}
+              />,
+              <ExportControls 
+                roverData={currentRover}
+                currentPhotos={[]}
+              />
+            ]}
+          >
             <MarsMap
               key={`map-${selectedRover}`}
               selectedRover={selectedRover}
@@ -188,46 +208,7 @@ export default function Home() {
               onPhotoSelect={handlePhotoSelect}
               onLocationSelect={handleLocationSelect}
             />
-          </div>
-
-          {/* Top Right - Weather Panel */}
-          <div className="absolute top-4 right-4 w-64 z-20">
-            <WeatherPanel rover={selectedRover} />
-          </div>
-
-          {/* Middle Right - Geological Analysis */}
-          <div className="absolute top-80 right-4 w-64 z-20">
-            <GeologicalAnalysis 
-              rover={selectedRover} 
-              selectedLocation={selectedLocation || undefined}
-            />
-          </div>
-
-          {/* Top Left - Day/Night Controls (moved from duplicate) */}
-          <div className="absolute top-4 left-4 w-64 z-20">
-            <DayNightOverlay />
-          </div>
-
-          {/* Bottom Left - Timeline */}
-          <div className="absolute bottom-20 left-4 w-80 z-20">
-            <AnimatedTimeline 
-              rover={selectedRover}
-              onEventSelect={handleTimelineEvent}
-            />
-          </div>
-
-          {/* Middle Left - 3D Terrain */}
-          <div className="absolute top-80 left-4 w-72 z-20">
-            <TerrainViewer location={selectedLocation || { lat: -5.4, lon: 137.8 }} />
-          </div>
-
-          {/* Bottom Right - Export Tools */}
-          <div className="absolute bottom-20 right-4 w-56 z-20">
-            <ExportControls 
-              roverData={currentRover}
-              currentPhotos={[]}
-            />
-          </div>
+          </UILayout>
         </div>
 
         {/* Mobile Layout */}

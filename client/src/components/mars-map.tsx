@@ -62,64 +62,66 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect, onLocationS
       const initialPosition = ROVER_POSITIONS[selectedRover];
       const leafletMap = L.map(mapRef.current!).setView([initialPosition.lat, initialPosition.lon], 12);
 
-      // Create custom Mars terrain tiles with proper Mars coloring
-      const createMarsLayer = () => {
-        return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: 'NASA JPL Mars Rover Tracking | Mars Terrain Simulation',
-          maxZoom: 18,
-          opacity: 1.0
-        });
-      };
-
-      // Primary Mars-styled layer
-      const marsLayer = createMarsLayer();
+      // NASA Mars HiRISE imagery - actual Mars satellite data
+      const marsHiRISELayer = L.tileLayer('https://map.mars.nasa.gov/tms/mro_ctx_sinu/{z}/{x}/{y}.png', {
+        attribution: 'NASA/JPL/UofA | Mars Reconnaissance Orbiter',
+        maxZoom: 12,
+        tms: true,
+        opacity: 1.0
+      });
       
-      // Alternative grayscale Mars layer
-      const marsGrayscaleLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'NASA JPL Mars Rover Tracking | Mars Grayscale',
+      // USGS Mars Global basemap as primary layer
+      const marsGlobalLayer = L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-1/{z}/{x}/{y}.png', {
+        attribution: 'NASA/JPL/USGS | Mars Global Imagery',
+        maxZoom: 10,
+        opacity: 1.0
+      });
+      
+      // Fallback with enhanced Mars styling
+      const marsFallbackLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'NASA JPL Mars Simulation',
         maxZoom: 18,
-        opacity: 0.7,
-        className: 'mars-grayscale'
+        opacity: 1.0,
+        className: 'mars-terrain'
       });
 
-      // Add Mars styling for fallback
-      const style = document.createElement('style');
-      style.textContent = `
-        .leaflet-tile-container img {
-          filter: sepia(80%) hue-rotate(10deg) saturate(150%) contrast(110%) brightness(85%);
-        }
-        .mars-overlay {
-          background: radial-gradient(ellipse at center, rgba(205, 92, 15, 0.1) 0%, rgba(139, 69, 19, 0.2) 50%, rgba(101, 67, 33, 0.3) 100%);
-          pointer-events: none;
-        }
-      `;
-      document.head.appendChild(style);
 
-      // Add Mars styling CSS
+      // Enhanced Mars terrain styling
       const marsStyle = document.createElement('style');
       marsStyle.textContent = `
-        .leaflet-tile-container img {
-          filter: sepia(90%) hue-rotate(15deg) saturate(200%) contrast(120%) brightness(75%) !important;
-        }
-        .mars-grayscale img {
-          filter: grayscale(100%) sepia(30%) hue-rotate(15deg) saturate(150%) brightness(70%) !important;
-        }
         .leaflet-container {
-          background-color: #8B4513 !important;
+          background-color: #CD5C0F !important;
+          background-image: radial-gradient(circle at 25% 25%, #E67E22 0%, #CD5C0F 25%, #A0522D 50%, #8B4513 100%);
+        }
+        .mars-terrain img {
+          filter: sepia(100%) saturate(300%) hue-rotate(25deg) contrast(150%) brightness(60%) !important;
+          mix-blend-mode: multiply;
+        }
+        .leaflet-tile-container {
+          background-color: #CD5C0F;
         }
       `;
       document.head.appendChild(marsStyle);
 
-      // Add primary Mars layer
-      marsLayer.addTo(leafletMap);
+      // Try Mars layers in order of preference
+      let activeLayer = null;
       
-      // Add layer control for basemap switching
-      const baseMaps = {
-        "Mars Color": marsLayer,
-        "Mars Grayscale": marsGrayscaleLayer
-      };
+      // First try NASA HiRISE
+      marsHiRISELayer.addTo(leafletMap);
+      activeLayer = marsHiRISELayer;
       
-      const layerControl = L.control.layers(baseMaps, {}).addTo(leafletMap);
+      // Fallback chain for Mars imagery
+      marsHiRISELayer.on('tileerror', () => {
+        leafletMap.removeLayer(marsHiRISELayer);
+        marsGlobalLayer.addTo(leafletMap);
+        activeLayer = marsGlobalLayer;
+        
+        marsGlobalLayer.on('tileerror', () => {
+          leafletMap.removeLayer(marsGlobalLayer);
+          marsFallbackLayer.addTo(leafletMap);
+          activeLayer = marsFallbackLayer;
+        });
+      });
 
       // Add topographical lines overlay
       const addTopographicalOverlay = () => {
