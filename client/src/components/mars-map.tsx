@@ -13,9 +13,10 @@ interface MarsMapProps {
   selectedRover: string;
   selectedSol: number;
   onPhotoSelect: (photo: RoverPhoto | null) => void;
+  onLocationSelect?: (location: { lat: number; lon: number }) => void;
 }
 
-export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapProps) {
+export function MarsMap({ selectedRover, selectedSol, onPhotoSelect, onLocationSelect }: MarsMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
   const [roverMarkers, setRoverMarkers] = useState<Record<string, any>>({});

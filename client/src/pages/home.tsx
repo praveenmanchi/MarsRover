@@ -1,21 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRovers } from "@/lib/nasa-api";
 import { RoverSidebar } from "@/components/rover-sidebar";
 import { MarsMap } from "@/components/mars-map";
 import { TimelineControls } from "@/components/timeline-controls";
 import { ImageLightbox } from "@/components/image-lightbox";
+import { WeatherPanel } from "@/components/weather-panel";
+import { GeologicalAnalysis } from "@/components/geological-analysis";
+import { TerrainViewer } from "@/components/3d-terrain-viewer";
+import { AnimatedTimeline } from "@/components/animated-timeline";
+import { ExportControls } from "@/components/export-controls";
+import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
+import { MobileControls } from "@/components/mobile-controls";
+import { DayNightOverlay } from "@/components/day-night-overlay";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Sun, Moon } from "lucide-react";
+import { ChevronDown, Sun, Moon, Maximize2, Minimize2 } from "lucide-react";
 import type { Rover, RoverPhoto } from "@/types/rover";
 
 export default function Home() {
   const [selectedRover, setSelectedRover] = useState<string>("curiosity");
   const [selectedSol, setSelectedSol] = useState<number>(4156);
   const [selectedPhoto, setSelectedPhoto] = useState<RoverPhoto | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [currentTime, setCurrentTime] = useState<string>("");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showLayers, setShowLayers] = useState(true);
+  const [timelineEvent, setTimelineEvent] = useState<any>(null);
   
   // Theme hook must be called at top level
   const { theme, setTheme } = useTheme();
@@ -53,6 +65,41 @@ export default function Home() {
     setSelectedPhoto(photo);
   };
 
+  const handleLocationSelect = (location: { lat: number; lon: number }) => {
+    setSelectedLocation(location);
+  };
+
+  const handleTimelineEvent = (event: any) => {
+    setTimelineEvent(event);
+    setSelectedLocation({ lat: event.coordinates[0], lon: event.coordinates[1] });
+  };
+
+  // Keyboard shortcuts handlers
+  const handleCenterRover = useCallback(() => {
+    setSelectedLocation({ lat: -5.4, lon: 137.8 });
+  }, []);
+
+  const handleToggleLayers = useCallback(() => {
+    setShowLayers(prev => !prev);
+  }, []);
+
+  const handleToggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev);
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }, []);
+
+  const handleRefreshData = useCallback(() => {
+    window.location.reload();
+  }, []);
+
+  const handleToggleTimeline = useCallback(() => {
+    // Could add timeline play/pause logic here
+  }, []);
+
   if (roversLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -68,9 +115,12 @@ export default function Home() {
   const currentRover = rovers.find((r: Rover) => r.name === selectedRover);
 
   return (
-    <div className="min-h-screen bg-black text-white font-mono">
+    <div className={`min-h-screen bg-black text-white font-mono ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+      {/* Day/Night and Environmental Overlays */}
+      <DayNightOverlay className="fixed top-4 left-4 w-64 z-30 hidden lg:block" />
+      
       {/* FUI Header */}
-      <header className="bg-black/90 border-b border-cyan-500/30 px-6 py-2" data-testid="header-main">
+      <header className={`bg-black/90 border-b border-cyan-500/30 px-6 py-2 ${isFullscreen ? 'hidden' : ''}`} data-testid="header-main">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-3">
@@ -82,7 +132,7 @@ export default function Home() {
                 <p className="text-cyan-500/60 text-xs font-mono">MARS SCIENCE LABORATORY</p>
               </div>
             </div>
-            <div className="flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-6">
               <div className="text-center">
                 <p className="text-xs font-mono text-cyan-500/60 uppercase">STATUS</p>
                 <div className="flex items-center space-x-2">
@@ -101,11 +151,20 @@ export default function Home() {
               <p className="text-xs font-mono text-cyan-500/60 uppercase">SOL</p>
               <p className="text-xl font-mono font-bold text-cyan-400" data-testid="text-current-sol">{selectedSol}</p>
             </div>
-            <div className="text-center">
+            <div className="hidden sm:block text-center">
               <p className="text-xs font-mono text-cyan-500/60 uppercase">EARTH TIME</p>
               <p className="text-sm font-mono font-bold text-white" data-testid="text-current-time">{currentTime}</p>
             </div>
-            <div className="h-8 w-px bg-cyan-500/30"></div>
+            <div className="h-8 w-px bg-cyan-500/30 hidden sm:block"></div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleToggleFullscreen}
+              data-testid="button-fullscreen"
+              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10"
+            >
+              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -119,27 +178,112 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="flex flex-col h-screen overflow-hidden">
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-hidden">
-          {/* Map */}
-          <div className="flex-1 relative">
+      <div className={`flex flex-col ${isFullscreen ? 'h-screen' : 'h-screen'} overflow-hidden`}>
+        {/* Desktop Layout */}
+        <div className="hidden md:block flex-1 relative">
+          {/* Main Map */}
+          <div className="absolute inset-0">
             <MarsMap
               key={`map-${selectedRover}`}
               selectedRover={selectedRover}
               selectedSol={selectedSol}
               onPhotoSelect={handlePhotoSelect}
+              onLocationSelect={handleLocationSelect}
             />
           </div>
 
-          {/* Timeline Controls */}
+          {/* Advanced Control Panels - Desktop */}
+          <div className="absolute top-4 right-4 space-y-4 w-72 z-20">
+            <WeatherPanel rover={selectedRover} />
+            <GeologicalAnalysis 
+              rover={selectedRover} 
+              selectedLocation={selectedLocation || undefined}
+            />
+          </div>
+
+          {/* Left Side Panels */}
+          <div className="absolute top-4 left-80 space-y-4 w-80 z-20">
+            <AnimatedTimeline 
+              rover={selectedRover}
+              onEventSelect={handleTimelineEvent}
+            />
+            <TerrainViewer location={selectedLocation || { lat: -5.4, lon: 137.8 }} />
+          </div>
+
+          {/* Bottom Right Tools */}
+          <div className="absolute bottom-20 right-4 w-64 z-20">
+            <ExportControls 
+              roverData={currentRover}
+              currentPhotos={[]}
+            />
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="md:hidden flex-1 relative">
+          {/* Mobile Map */}
+          <div className="absolute inset-0">
+            <MarsMap
+              key={`map-${selectedRover}-mobile`}
+              selectedRover={selectedRover}
+              selectedSol={selectedSol}
+              onPhotoSelect={handlePhotoSelect}
+              onLocationSelect={handleLocationSelect}
+            />
+          </div>
+
+          {/* Mobile Controls */}
+          <MobileControls
+            children={{
+              cameras: (
+                <div className="text-center text-gray-400 py-4">
+                  Camera feeds optimized for desktop
+                </div>
+              ),
+              weather: <WeatherPanel rover={selectedRover} />,
+              geology: (
+                <GeologicalAnalysis 
+                  rover={selectedRover} 
+                  selectedLocation={selectedLocation || undefined}
+                />
+              ),
+              timeline: (
+                <AnimatedTimeline 
+                  rover={selectedRover}
+                  onEventSelect={handleTimelineEvent}
+                />
+              ),
+              terrain3d: (
+                <TerrainViewer location={selectedLocation || { lat: -5.4, lon: 137.8 }} />
+              ),
+              export: (
+                <ExportControls 
+                  roverData={currentRover}
+                  currentPhotos={[]}
+                />
+              )
+            }}
+          />
+        </div>
+
+        {/* Timeline Controls - Always visible at bottom */}
+        {!isFullscreen && (
           <TimelineControls
             currentRover={currentRover}
             selectedSol={selectedSol}
             onSolChange={handleSolChange}
           />
-        </main>
+        )}
       </div>
+
+      {/* Keyboard Shortcuts */}
+      <KeyboardShortcuts
+        onCenterRover={handleCenterRover}
+        onToggleLayers={handleToggleLayers}
+        onToggleFullscreen={handleToggleFullscreen}
+        onRefreshData={handleRefreshData}
+        onToggleTimeline={handleToggleTimeline}
+      />
 
       {/* Image Lightbox */}
       {selectedPhoto && (

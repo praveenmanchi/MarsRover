@@ -19,7 +19,7 @@ export function TerrainViewer({ location = { lat: -5.4, lon: 137.8 }, className 
   // Generate terrain data based on location
   const generateTerrainData = () => {
     const size = 50;
-    const terrain = [];
+    const terrain: number[][] = [];
     const centerLat = location.lat;
     const centerLon = location.lon;
     
