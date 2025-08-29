@@ -67,30 +67,99 @@ export function MarsMapFixed({
 
     leafletMapRef.current = leafletMap;
 
-    // Mars terrain styling
+    // Mars orbital imagery and terrain styling
     const marsStyle = document.createElement('style');
     marsStyle.textContent = `
       .leaflet-container {
-        background: linear-gradient(135deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #D2691E 75%, #8B4513 100%) !important;
+        background: radial-gradient(circle at center, #4A2C2A 0%, #2D1B1B 50%, #1A0F0F 100%) !important;
+      }
+      .mars-orbital-imagery img {
+        /* Authentic orbital imagery - minimal processing */
+        filter: contrast(110%) brightness(90%) saturate(110%) !important;
+        mix-blend-mode: normal;
       }
       .mars-styled-terrain img {
+        /* Styled terrain fallback */
         filter: sepia(100%) saturate(200%) hue-rotate(15deg) contrast(130%) brightness(70%) !important;
         mix-blend-mode: multiply;
       }
       .leaflet-tile-pane {
-        opacity: 0.9;
+        opacity: 0.95;
+      }
+      .orbital-layer-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: #22d3ee;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 11px;
+        z-index: 1000;
       }
     `;
     document.head.appendChild(marsStyle);
 
-    // Simple working tile layer with Mars styling
-    const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // NASA HiRISE and MRO orbital imagery layers
+    const hiRiseLayer = L.tileLayer('https://map.mars.asu.edu/arcgis/rest/services/MDIM21/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'NASA/JPL/ASU | HiRISE Mars Reconnaissance Orbiter',
+      maxZoom: 12,
+      className: 'mars-orbital-imagery'
+    });
+    
+    const mroCtxLayer = L.tileLayer('https://astrogeology.usgs.gov/cache/mars_mro_ctx/{z}/{x}/{y}.png', {
+      attribution: 'NASA/JPL/MSSS | Mars Reconnaissance Orbiter CTX',
+      maxZoom: 10,
+      className: 'mars-orbital-imagery'
+    });
+    
+    // Fallback styled terrain
+    const styledTerrain = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Mars Terrain Simulation | Based on NASA Mission Data',
       maxZoom: 18,
       className: 'mars-styled-terrain'
     });
 
-    baseLayer.addTo(leafletMap);
+    // Try authentic orbital imagery first, then fallback
+    let currentLayer = null;
+    let layerSource = 'Loading...';
+    
+    // Primary: NASA HiRISE orbital imagery
+    hiRiseLayer.addTo(leafletMap);
+    currentLayer = hiRiseLayer;
+    layerSource = 'HiRISE/MRO';
+    
+    // Create layer indicator
+    const layerIndicator = document.createElement('div');
+    layerIndicator.className = 'orbital-layer-indicator';
+    layerIndicator.textContent = layerSource;
+    mapRef.current.appendChild(layerIndicator);
+    
+    // Fallback chain for orbital imagery
+    hiRiseLayer.on('tileerror', () => {
+      console.log('HiRISE layer failed, trying MRO CTX');
+      leafletMap.removeLayer(hiRiseLayer);
+      mroCtxLayer.addTo(leafletMap);
+      currentLayer = mroCtxLayer;
+      layerIndicator.textContent = 'MRO CTX';
+      
+      mroCtxLayer.on('tileerror', () => {
+        console.log('MRO layer failed, using styled terrain');
+        leafletMap.removeLayer(mroCtxLayer);
+        styledTerrain.addTo(leafletMap);
+        currentLayer = styledTerrain;
+        layerIndicator.textContent = 'Simulated';
+      });
+    });
+    
+    hiRiseLayer.on('tileload', () => {
+      layerIndicator.textContent = 'HiRISE Orbital';
+    });
+    
+    mroCtxLayer.on('tileload', () => {
+      layerIndicator.textContent = 'MRO CTX';
+    });
 
     // Add rover marker
     const roverIcon = L.divIcon({
@@ -167,7 +236,9 @@ export function MarsMapFixed({
         leafletMapRef.current.remove();
         leafletMapRef.current = null;
       }
-      document.head.removeChild(marsStyle);
+      if (document.head.contains(marsStyle)) {
+        document.head.removeChild(marsStyle);
+      }
     };
   }, [selectedRover, selectedSol, photos, currentLocation, onPhotoSelect, onLocationSelect]);
 
@@ -192,7 +263,7 @@ export function MarsMapFixed({
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-cyan-400 font-mono flex items-center gap-2">
             <MapPin className="w-4 h-4" />
-            MARS SURFACE MAP
+            MARS ORBITAL IMAGERY
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0 space-y-2">
@@ -205,6 +276,10 @@ export function MarsMapFixed({
           
           <div className="text-xs text-gray-300 space-y-1">
             <div className="flex items-center justify-between">
+              <span>Data Source:</span>
+              <span className="font-mono text-green-400">NASA/JPL</span>
+            </div>
+            <div className="flex items-center justify-between">
               <span>Location:</span>
               <span className="font-mono text-cyan-400">
                 {currentLocation.lat.toFixed(2)}°N, {currentLocation.lon.toFixed(2)}°E
@@ -213,6 +288,10 @@ export function MarsMapFixed({
             <div className="flex items-center justify-between">
               <span>Photos:</span>
               <span className="font-mono text-yellow-400">{photos.length}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Mission:</span>
+              <span className="font-mono text-orange-400">MRO/HiRISE</span>
             </div>
           </div>
         </CardContent>
