@@ -48,13 +48,25 @@ export default function Home() {
 
   const currentRover = rovers.find((r: Rover) => r.name === selectedRover);
 
-  // Get real Mars photos with fallback
-  const getPhotoUrl = (photo: any) => {
+  // Get varied Mars photos
+  const getPhotoUrl = (photo: any, index: number = 0) => {
     if (photo?.imgSrc || photo?.img_src) {
       return photo.imgSrc || photo.img_src;
     }
-    // Return a real Mars image as fallback
-    return "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG";
+    // Different Mars images for variety
+    const fallbackImages = [
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/msss/01000/mcam/1000ML0044631200305217E01_DXXX.jpg",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01500/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/02000/opgs/edr/rcam/RLB_486265257EDR_F0481570RHAZ00323M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/msss/02500/mcam/2500ML0133870400803932C00_DXXX.jpg",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/03000/opgs/edr/ncam/NLB_550818504EDR_F0540000NCAM00320M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/msss/03500/mcam/3500ML0168200290709854C00_DXXX.jpg",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/04000/opgs/edr/fcam/FLB_645369149EDR_F0660000FHAZ00337M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/msss/04100/mcam/4100ML0190000270105851C00_DXXX.jpg",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/04200/opgs/edr/ncam/NLB_672043927EDR_F0700000NCAM00372M_.JPG"
+    ];
+    return fallbackImages[index % fallbackImages.length];
   };
 
   // Camera types
@@ -362,12 +374,12 @@ export default function Home() {
                   </div>
                   <div className="relative h-48 bg-gray-900 rounded-lg overflow-hidden">
                     <img 
-                      src={photos[0] ? getPhotoUrl(photos[0]) : "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG"}
+                      src={photos[0] ? getPhotoUrl(photos[0], 0) : getPhotoUrl(null, 0)}
                       alt="Surrounding view"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = 'https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG';
+                        target.src = getPhotoUrl(null, 1);
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -403,12 +415,12 @@ export default function Home() {
                     {photos.slice(0, 4).map((photo, index) => (
                       <div key={index} className="relative h-24 bg-gray-900 rounded overflow-hidden cursor-pointer hover:opacity-80">
                         <img 
-                          src={getPhotoUrl(photo)}
+                          src={getPhotoUrl(photo, index + 2)}
                           alt={`Camera ${index + 1}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = `https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/0100${index}/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG`;
+                            target.src = getPhotoUrl(null, index + 6);
                           }}
                         />
                       </div>
@@ -431,12 +443,12 @@ export default function Home() {
                     <div key={camera} className="text-center">
                       <div className="relative h-20 bg-gray-900 rounded-lg overflow-hidden mb-2 cursor-pointer hover:ring-2 hover:ring-orange-500">
                         <img 
-                          src={photos[index] ? getPhotoUrl(photos[index]) : `https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/0100${index}/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG`}
+                          src={photos[index] ? getPhotoUrl(photos[index], index) : getPhotoUrl(null, index)}
                           alt={camera}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = 'https://mars.nasa.gov/msl-raw-images/msss/01000/mcam/1000ML0044631200305217E01_DXXX.jpg';
+                            target.src = getPhotoUrl(null, index + 5);
                           }}
                         />
                       </div>
@@ -504,13 +516,13 @@ export default function Home() {
                       onClick={() => setSelectedPhoto(photo)}
                     >
                       <img 
-                        src={getPhotoUrl(photo)}
+                        src={getPhotoUrl(photo, index)}
                         alt={`Sol ${selectedSol} photo ${index + 1}`}
                         className="w-full h-full object-cover"
                         loading="lazy"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = 'https://mars.nasa.gov/msl-raw-images/msss/01000/mcam/1000ML0044631200305217E01_DXXX.jpg';
+                          target.src = getPhotoUrl(null, index + 3);
                         }}
                       />
                       <div className="absolute top-1 right-1">
@@ -649,7 +661,7 @@ export default function Home() {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={getPhotoUrl(selectedPhoto)}
+              src={getPhotoUrl(selectedPhoto, 0)}
               alt={`Mars ${selectedPhoto.camera?.name}`}
               className="w-full h-full object-contain rounded-lg"
             />

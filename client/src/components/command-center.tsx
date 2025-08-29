@@ -7,7 +7,7 @@ import {
   Home, Target, Send, Settings, LogOut, HelpCircle, FileText,
   Camera, Navigation, Activity, AlertCircle, CheckCircle,
   Thermometer, Gauge, Wind, MapPin, Clock, ChevronRight,
-  RotateCw, Pause, Play, ZoomIn, ZoomOut, Eye
+  RotateCw, Pause, Play, ZoomIn, ZoomOut, Eye, Maximize2
 } from "lucide-react";
 
 interface CommandCenterProps {
@@ -30,17 +30,21 @@ export function CommandCenter({
   const [activeView, setActiveView] = useState("overview");
   const [selectedCamera, setSelectedCamera] = useState("NAVCAM");
   
-  // Get real Mars photos with fallback
+  // Get real Mars photos with variety
   const getPhotoUrl = (index: number) => {
     if (photos && photos[index]) {
       return photos[index].imgSrc || photos[index].img_src;
     }
-    // Fallback to real Mars images
+    // Different Mars images for variety
     const fallbackImages = [
       "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/ncam/NLB_486265257EDR_F0481570NCAM00323M_.JPG",
       "https://mars.nasa.gov/msl-raw-images/msss/01000/mcam/1000ML0044631200305217E01_DXXX.jpg",
-      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG",
-      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/rcam/RLB_486265257EDR_F0481570RHAZ00323M_.JPG"
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01500/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/02000/opgs/edr/rcam/RLB_486265257EDR_F0481570RHAZ00323M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/msss/02500/mcam/2500ML0133870400803932C00_DXXX.jpg",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/03000/opgs/edr/ncam/NLB_550818504EDR_F0540000NCAM00320M_.JPG",
+      "https://mars.nasa.gov/msl-raw-images/msss/03500/mcam/3500ML0168200290709854C00_DXXX.jpg",
+      "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/04000/opgs/edr/fcam/FLB_645369149EDR_F0660000FHAZ00337M_.JPG"
     ];
     return fallbackImages[index % fallbackImages.length];
   };
