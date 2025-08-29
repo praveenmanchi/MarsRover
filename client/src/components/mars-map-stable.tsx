@@ -125,20 +125,80 @@ export function MarsMapStable({
       </div>
     `);
 
-    // Add topographical circles
-    for (let i = 1; i <= 6; i++) {
-      const radius = i * 500; // meters
+    // Add prominent topographical circles with elevation markers
+    for (let i = 1; i <= 8; i++) {
+      const radius = i * 800; // meters (larger for visibility)
       const circle = L.circle([currentLocation.lat, currentLocation.lon], {
         radius: radius,
         fillOpacity: 0,
-        color: '#CD853F',
-        weight: 1,
-        opacity: 0.3 + (i * 0.05),
-        dashArray: i % 2 === 0 ? '5, 10' : '2, 5'
+        color: i % 2 === 0 ? '#FF6B35' : '#FFD700', // Alternating orange and gold
+        weight: 2, // Thicker lines
+        opacity: 0.7, // More visible
+        dashArray: i % 2 === 0 ? '10, 5' : '5, 3'
       });
       
       circle.addTo(leafletMapRef.current);
       markersRef.current.push(circle);
+      
+      // Add elevation markers at cardinal points
+      if (i % 2 === 0) {
+        const elevationText = `${i * 100}m`;
+        const angles = [0, 90, 180, 270];
+        
+        angles.forEach(angle => {
+          const radian = (angle * Math.PI) / 180;
+          const markerLat = currentLocation.lat + (radius / 111320) * Math.cos(radian);
+          const markerLon = currentLocation.lon + (radius / (111320 * Math.cos(currentLocation.lat * Math.PI / 180))) * Math.sin(radian);
+          
+          const elevationMarker = L.marker([markerLat, markerLon], {
+            icon: L.divIcon({
+              html: `<div style="background: rgba(0,0,0,0.8); color: #FFD700; padding: 2px 4px; border-radius: 3px; font-size: 10px; font-weight: bold; border: 1px solid #FF6B35;">${elevationText}</div>`,
+              className: 'elevation-marker',
+              iconSize: [40, 20],
+              iconAnchor: [20, 10]
+            })
+          });
+          
+          elevationMarker.addTo(leafletMapRef.current);
+          markersRef.current.push(elevationMarker);
+        });
+      }
+    }
+    
+    // Add grid lines for better metric visualization
+    const gridLines = [];
+    const gridSpacing = 0.01; // degrees
+    
+    // Vertical grid lines
+    for (let i = -5; i <= 5; i++) {
+      const lon = currentLocation.lon + (i * gridSpacing);
+      const line = L.polyline([
+        [currentLocation.lat - 0.05, lon],
+        [currentLocation.lat + 0.05, lon]
+      ], {
+        color: '#8B4513',
+        weight: 0.5,
+        opacity: 0.3,
+        dashArray: '1, 3'
+      });
+      line.addTo(leafletMapRef.current);
+      markersRef.current.push(line);
+    }
+    
+    // Horizontal grid lines
+    for (let i = -5; i <= 5; i++) {
+      const lat = currentLocation.lat + (i * gridSpacing);
+      const line = L.polyline([
+        [lat, currentLocation.lon - 0.05],
+        [lat, currentLocation.lon + 0.05]
+      ], {
+        color: '#8B4513',
+        weight: 0.5,
+        opacity: 0.3,
+        dashArray: '1, 3'
+      });
+      line.addTo(leafletMapRef.current);
+      markersRef.current.push(line);
     }
 
     // Add photo markers
@@ -175,17 +235,22 @@ export function MarsMapStable({
     const marsStyle = document.createElement('style');
     marsStyle.textContent = `
       .leaflet-container {
-        background: radial-gradient(circle at center, #4A2C2A 0%, #2D1B1B 50%, #1A0F0F 100%) !important;
+        background: linear-gradient(135deg, #8B4513 0%, #CD853F 50%, #D2691E 100%) !important;
       }
       .mars-terrain-layer img {
-        filter: sepia(100%) saturate(180%) hue-rotate(15deg) contrast(120%) brightness(70%) !important;
-        mix-blend-mode: multiply;
+        filter: sepia(90%) saturate(150%) hue-rotate(10deg) contrast(110%) brightness(80%) !important;
+        mix-blend-mode: normal;
+        opacity: 0.7;
       }
       .leaflet-tile-pane {
-        opacity: 0.85;
+        opacity: 0.7;
       }
-      .rover-marker, .photo-marker {
+      .rover-marker, .photo-marker, .elevation-marker {
         z-index: 1000 !important;
+      }
+      .leaflet-overlay-pane svg path {
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
     `;
     document.head.appendChild(marsStyle);
@@ -261,13 +326,18 @@ export function MarsMapStable({
       <Card className="absolute bottom-4 right-4 bg-black/90 border-cyan-500/30 backdrop-blur-sm">
         <CardContent className="p-3">
           <div className="text-xs text-gray-300 space-y-1">
+            <div className="font-mono text-cyan-400 mb-2">ELEVATION CONTOURS</div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-0 border-t border-dashed border-orange-400 opacity-50"></div>
-              <span>500m contour</span>
+              <div className="w-8 h-0 border-t-2 border-dashed border-yellow-400"></div>
+              <span className="text-yellow-400">Odd intervals</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-0 border-t border-orange-400 opacity-70"></div>
-              <span>1km contour</span>
+              <div className="w-8 h-0 border-t-2 border-dashed border-orange-500"></div>
+              <span className="text-orange-400">Even intervals</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-0 border-t border-dotted border-amber-700"></div>
+              <span className="text-amber-600">Grid lines (1km)</span>
             </div>
           </div>
         </CardContent>
