@@ -119,26 +119,26 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="flex flex-col h-screen overflow-hidden">
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-hidden">
-          {/* Map */}
-          <div className="flex-1 relative">
-            <MarsMap
-              key={`map-${selectedRover}`}
-              selectedRover={selectedRover}
-              selectedSol={selectedSol}
-              onPhotoSelect={handlePhotoSelect}
-            />
-          </div>
-
-          {/* Timeline Controls */}
+      {/* Responsive Layout */}
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-60px)] overflow-hidden">
+        {/* Map Section */}
+        <div className="flex-1 relative min-h-[400px]">
+          <MarsMap
+            key={`map-${selectedRover}`}
+            selectedRover={selectedRover}
+            selectedSol={selectedSol}
+            onPhotoSelect={handlePhotoSelect}
+          />
+        </div>
+        
+        {/* Timeline Controls - Side Panel */}
+        <div className="lg:w-96 lg:border-l border-t lg:border-t-0 border-cyan-500/30 bg-black/90 flex-shrink-0">
           <TimelineControls
             currentRover={currentRover}
             selectedSol={selectedSol}
             onSolChange={handleSolChange}
           />
-        </main>
+        </div>
       </div>
 
       {/* Image Lightbox */}

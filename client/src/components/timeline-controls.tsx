@@ -77,48 +77,44 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
   }
 
   return (
-    <div className="bg-black/90 border-t border-cyan-500/30 p-4" data-testid="timeline-controls">
-      {/* FUI Mission Status Grid */}
-      <div className="grid grid-cols-8 gap-2 mb-6">
-        <div className="bg-black/60 border border-cyan-400/30 p-2">
-          <div className="text-xs font-mono text-cyan-400/60 uppercase">Earth Date</div>
-          <div className="text-sm font-mono text-cyan-400 font-bold" data-testid="text-selected-earth-date">{formatEarthDate(selectedSol)}</div>
+    <div className="h-full bg-black/90 p-4 overflow-y-auto" data-testid="timeline-controls">
+      {/* Compact Mission Header */}
+      <div className="border-l-2 border-cyan-400 pl-3 mb-4">
+        <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">MISSION TIMELINE</h3>
+        <div className="text-xs font-mono text-cyan-400/60">Sol {selectedSol} • {formatEarthDate(selectedSol)}</div>
+      </div>
+
+      {/* Responsive Mission Status Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 mb-6">
+        <div className="bg-cyan-400/10 border border-cyan-400/30 p-2 rounded">
+          <div className="text-xs font-mono text-cyan-400/60 uppercase">Photos Today</div>
+          <div className="text-sm font-mono text-cyan-400 font-bold" data-testid="text-photos-count">{photos.length}</div>
         </div>
         
-        <div className="bg-black/60 border border-green-400/30 p-2">
-          <div className="text-xs font-mono text-green-400/60 uppercase">Photos</div>
-          <div className="text-sm font-mono text-green-400 font-bold" data-testid="text-photos-count">{photos.length}</div>
-        </div>
-        
-        <div className="bg-black/60 border border-blue-400/30 p-2">
-          <div className="text-xs font-mono text-blue-400/60 uppercase">Cameras</div>
-          <div className="text-sm font-mono text-blue-400 font-bold" data-testid="text-cameras-active">
+        <div className="bg-green-400/10 border border-green-400/30 p-2 rounded">
+          <div className="text-xs font-mono text-green-400/60 uppercase">Active Cameras</div>
+          <div className="text-sm font-mono text-green-400 font-bold" data-testid="text-cameras-active">
             {new Set(photos.map(p => p.cameraId)).size}
           </div>
         </div>
         
-        <div className="bg-black/60 border border-yellow-400/30 p-2">
-          <div className="text-xs font-mono text-yellow-400/60 uppercase">Contact</div>
+        <div className="bg-yellow-400/10 border border-yellow-400/30 p-2 rounded">
+          <div className="text-xs font-mono text-yellow-400/60 uppercase">Last Contact</div>
           <div className="text-sm font-mono text-yellow-400 font-bold" data-testid="text-last-contact">{getLastContact()}</div>
         </div>
         
-        <div className="bg-black/60 border border-purple-400/30 p-2">
-          <div className="text-xs font-mono text-purple-400/60 uppercase">Driven</div>
+        <div className="bg-purple-400/10 border border-purple-400/30 p-2 rounded">
+          <div className="text-xs font-mono text-purple-400/60 uppercase">Distance Driven</div>
           <div className="text-sm font-mono text-purple-400 font-bold" data-testid="text-distance-driven">{getDistanceDriven()}</div>
         </div>
         
-        <div className="bg-black/60 border border-orange-400/30 p-2">
-          <div className="text-xs font-mono text-orange-400/60 uppercase">Total</div>
+        <div className="bg-orange-400/10 border border-orange-400/30 p-2 rounded">
+          <div className="text-xs font-mono text-orange-400/60 uppercase">Total Distance</div>
           <div className="text-sm font-mono text-orange-400 font-bold" data-testid="text-total-distance">{getTotalDistance()}</div>
         </div>
         
-        <div className="bg-black/60 border border-red-400/30 p-2">
-          <div className="text-xs font-mono text-red-400/60 uppercase">Location</div>
-          <div className="text-sm font-mono text-red-400 font-bold">{currentRover.location}</div>
-        </div>
-        
-        <div className="bg-black/60 border border-emerald-400/30 p-2">
-          <div className="text-xs font-mono text-emerald-400/60 uppercase">Mode</div>
+        <div className="bg-emerald-400/10 border border-emerald-400/30 p-2 rounded">
+          <div className="text-xs font-mono text-emerald-400/60 uppercase">Rover Mode</div>
           <div className="text-sm font-mono text-emerald-400 font-bold">AUTO</div>
         </div>
       </div>
