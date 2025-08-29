@@ -25,6 +25,8 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
   const [showPhotos, setShowPhotos] = useState(true);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [showCameraModal, setShowCameraModal] = useState(false);
+  const [activeBasemap, setActiveBasemap] = useState('color');
+  const [showTopography, setShowTopography] = useState(true);
 
   const { data: photosData, isLoading: photosLoading } = useQuery({
     queryKey: ["/api/rovers", selectedRover, "photos", selectedSol],
@@ -59,22 +61,60 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
       const initialPosition = ROVER_POSITIONS[selectedRover];
       const leafletMap = L.map(mapRef.current!).setView([initialPosition.lat, initialPosition.lon], 12);
 
-      // Use OpenStreetMap as base layer for Mars simulation
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'NASA JPL Mars Rover Tracking | Simulated Mars Terrain',
-        opacity: 0.6,
-        // Apply Mars-like color filter
-        className: 'mars-terrain'
-      }).addTo(leafletMap);
+      // Use NASA Mars satellite imagery from USGS
+      const marsLayer = L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-2/{z}/{x}/{y}.png', {
+        attribution: 'NASA/JPL/USGS Mars Global Surveyor | Mars Rover Tracking',
+        maxZoom: 18,
+        tms: true,
+        opacity: 1.0
+      });
 
-      // Add custom Mars terrain styling
+      // Fallback to styled OpenStreetMap if Mars tiles fail
+      const fallbackLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'NASA JPL Mars Rover Tracking | Simulated Mars Terrain',
+        opacity: 0.8
+      });
+
+      // Add Mars styling for fallback
       const style = document.createElement('style');
       style.textContent = `
-        .mars-terrain {
-          filter: sepia(100%) hue-rotate(10deg) saturate(200%) contrast(120%) brightness(90%);
+        .leaflet-tile-container img {
+          filter: sepia(80%) hue-rotate(10deg) saturate(150%) contrast(110%) brightness(85%);
+        }
+        .mars-overlay {
+          background: radial-gradient(ellipse at center, rgba(205, 92, 15, 0.1) 0%, rgba(139, 69, 19, 0.2) 50%, rgba(101, 67, 33, 0.3) 100%);
+          pointer-events: none;
         }
       `;
       document.head.appendChild(style);
+
+      // Try Mars layer first, fallback to styled OSM
+      marsLayer.addTo(leafletMap);
+      marsLayer.on('tileerror', () => {
+        leafletMap.removeLayer(marsLayer);
+        fallbackLayer.addTo(leafletMap);
+      });
+
+      // Add topographical lines overlay
+      const addTopographicalOverlay = () => {
+        // Add contour lines for Mars elevation
+        const topographyLines = [];
+        for (let i = 0; i < 10; i++) {
+          const radius = 1000 + (i * 500);
+          const circle = L.circle([initialPosition.lat, initialPosition.lon], {
+            radius: radius,
+            fillOpacity: 0,
+            color: '#8B4513',
+            weight: 1,
+            opacity: 0.3
+          });
+          topographyLines.push(circle);
+          circle.addTo(leafletMap);
+        }
+        return topographyLines;
+      };
+
+      const topography = addTopographicalOverlay();
 
       if (isMounted) {
         setMap(leafletMap);
@@ -369,95 +409,91 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         )}
       </div>
 
-      {/* FUI Metrics Panel - Fixed Position */}
-      <div className="absolute bottom-20 left-4 bg-black/80 border border-cyan-400/40 p-4 min-w-[300px] z-10" data-testid="overlay-metrics">
-        <div className="border-l-2 border-cyan-400 pl-3 mb-4">
-          <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">SENSOR DATA</h3>
-          <div className="text-xs font-mono text-cyan-400/60">REAL-TIME MONITORING</div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-blue-500/10 border border-blue-500/30 p-2">
-            <div className="text-xs font-mono text-blue-400/80 uppercase">TEMP</div>
-            <div className="text-lg font-mono font-bold text-blue-400">{envData.temperature}</div>
-            <div className="w-full h-1 bg-blue-500/20 mt-1">
-              <div className="h-full bg-blue-500 w-3/4"></div>
+      {/* Environmental Metrics Panel */}
+      <div className="absolute bottom-4 left-4 bg-black/90 border border-gray-600/40 p-4 w-48 z-10" data-testid="overlay-metrics">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-orange-800/60 p-2 text-center">
+              <div className="text-xs font-mono text-orange-200 uppercase">TEMP</div>
+              <div className="text-lg font-mono font-bold text-white">-12°C</div>
+            </div>
+            <div className="bg-yellow-700/60 p-2 text-center">
+              <div className="text-xs font-mono text-yellow-200 uppercase">DUST</div>
+              <div className="text-lg font-mono font-bold text-white">Low</div>
             </div>
           </div>
           
-          <div className="bg-yellow-500/10 border border-yellow-500/30 p-2">
-            <div className="text-xs font-mono text-yellow-400/80 uppercase">DUST</div>
-            <div className="text-lg font-mono font-bold text-yellow-400">{envData.dustLevel}</div>
-            <div className="w-full h-1 bg-yellow-500/20 mt-1">
-              <div className="h-full bg-yellow-500 w-1/2"></div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-green-700/60 p-2 text-center">
+              <div className="text-xs font-mono text-green-200 uppercase">PRESS</div>
+              <div className="text-lg font-mono font-bold text-white">8.2 Pa</div>
+            </div>
+            <div className="bg-blue-700/60 p-2 text-center">
+              <div className="text-xs font-mono text-blue-200 uppercase">WIND</div>
+              <div className="text-lg font-mono font-bold text-white">12 m/s</div>
             </div>
           </div>
           
-          <div className="bg-red-500/10 border border-red-500/30 p-2">
-            <div className="text-xs font-mono text-red-400/80 uppercase">PRESS</div>
-            <div className="text-lg font-mono font-bold text-red-400">{envData.pressure}</div>
-            <div className="w-full h-1 bg-red-500/20 mt-1">
-              <div className="h-full bg-red-500 w-2/3"></div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-purple-700/60 p-2 text-center">
+              <div className="text-xs font-mono text-purple-200 uppercase">BATTERY</div>
+              <div className="text-lg font-mono font-bold text-white">STRONG</div>
             </div>
-          </div>
-          
-          <div className="bg-green-500/10 border border-green-500/30 p-2">
-            <div className="text-xs font-mono text-green-400/80 uppercase">WIND</div>
-            <div className="text-lg font-mono font-bold text-green-400">{envData.windSpeed}</div>
-            <div className="w-full h-1 bg-green-500/20 mt-1">
-              <div className="h-full bg-green-500 w-3/5"></div>
+            <div className="bg-cyan-700/60 p-2 text-center">
+              <div className="text-xs font-mono text-cyan-200 uppercase">COMMS</div>
+              <div className="text-lg font-mono font-bold text-white">STRONG</div>
             </div>
-          </div>
-        </div>
-        
-        <div className="mt-4 pt-3 border-t border-cyan-400/20">
-          <div className="flex justify-between text-xs font-mono">
-            <span className="text-cyan-400/60">BATTERY:</span>
-            <span className="text-cyan-400">{envData.battery}</span>
-          </div>
-          <div className="flex justify-between text-xs font-mono mt-1">
-            <span className="text-cyan-400/60">SIGNAL:</span>
-            <span className="text-green-400">{envData.connection}</span>
           </div>
         </div>
       </div>
 
-      {/* Camera Views Panel - Made Functional */}
-      <div className="absolute top-4 right-96 bg-black/80 border border-cyan-400/40 p-4 w-80 z-10" data-testid="camera-views">
-        <div className="border-l-2 border-cyan-400 pl-3 mb-4">
-          <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">CAMERA FEEDS</h3>
-          <div className="text-xs font-mono text-cyan-400/60">MULTIPLE ANGLES</div>
+      {/* Camera Feeds Panel - Repositioned */}
+      <div className="absolute top-4 right-4 bg-black/90 border border-gray-600/40 p-4 w-72 z-10" data-testid="camera-views">
+        <div className="mb-3">
+          <h3 className="text-sm font-mono font-bold text-white tracking-wider">CAMERA FEEDS</h3>
+          <div className="text-xs font-mono text-gray-400">MULTIPLE ANGLES</div>
         </div>
         
         <div className="grid grid-cols-2 gap-2">
           {['NAVCAM', 'FHAZ', 'RHAZ', 'MAST'].map((camera, index) => {
-            const cameraPhotos = photos.filter(photo => photo.cameraId.includes(camera.toLowerCase()));
+            // Use latest photos since current sol might have no photos
+            const cameraPhotos = latestPhotosData?.latest_photos?.filter(photo => 
+              photo.camera?.name?.toLowerCase().includes(camera.toLowerCase().slice(0, 3))
+            ) || [];
             const hasPhotos = cameraPhotos.length > 0;
             
             return (
               <Dialog key={camera}>
                 <DialogTrigger asChild>
-                  <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative cursor-pointer hover:border-cyan-400/60 transition-colors">
-                    <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">{camera}</div>
+                  <div className="bg-gray-800/60 border border-gray-600/50 aspect-video relative cursor-pointer hover:border-gray-400/80 transition-colors">
+                    <div className="absolute top-1 left-1 text-xs font-mono text-white">{camera}</div>
                     {hasPhotos ? (
                       <img 
                         src={cameraPhotos[0].imageUrl} 
                         alt={`${camera} view`}
-                        className="absolute inset-0 w-full h-full object-cover opacity-80"
+                        className="absolute inset-0 w-full h-full object-cover opacity-70"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.nextElementSibling?.classList.remove('hidden');
+                        }}
                       />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-orange-900/50 to-red-900/50"></div>
-                    )}
-                    <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <div className="absolute bottom-1 left-1 text-xs font-mono text-cyan-400">
-                      {hasPhotos ? `${cameraPhotos.length} photos` : 'No data'}
+                    ) : null}
+                    <div className={`absolute inset-0 bg-gradient-to-br from-orange-900/40 to-red-900/40 flex items-center justify-center ${hasPhotos ? 'hidden' : ''}`}>
+                      <span className="text-gray-400 text-xs font-mono">No Data</span>
                     </div>
+                    <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    {hasPhotos && (
+                      <div className="absolute bottom-1 left-1 text-xs font-mono text-white bg-black/60 px-1 rounded">
+                        {cameraPhotos.length}
+                      </div>
+                    )}
                   </div>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[80vh] bg-black/95 border-cyan-400/40">
+                <DialogContent className="max-w-4xl max-h-[80vh] bg-black/95 border-gray-600/40">
                   <DialogHeader>
-                    <DialogTitle className="text-cyan-400 font-mono">
-                      {camera} CAMERA FEED - SOL {selectedSol}
+                    <DialogTitle className="text-white font-mono">
+                      {camera} CAMERA FEED
                     </DialogTitle>
                   </DialogHeader>
                   <div className="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto">
@@ -467,17 +503,17 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
                           <img
                             src={photo.imageUrl}
                             alt={`${camera} ${photoIndex + 1}`}
-                            className="w-full aspect-video object-cover border border-cyan-400/30 hover:border-cyan-400/60 transition-colors"
+                            className="w-full aspect-video object-cover border border-gray-600/50 hover:border-gray-400/80 transition-colors"
                             onClick={() => onPhotoSelect(photo)}
                           />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span className="text-cyan-400 text-xs font-mono">Click to view</span>
+                            <span className="text-white text-xs font-mono">Click to view</span>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="col-span-3 text-center text-cyan-400/60 font-mono py-8">
-                        No images available for {camera} on Sol {selectedSol}
+                      <div className="col-span-3 text-center text-gray-400 font-mono py-8">
+                        No images available for {camera}
                       </div>
                     )}
                   </div>
@@ -556,16 +592,17 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
             <div className="flex space-x-2">
               <Button 
                 size="sm"
-                className="text-xs font-mono bg-gray-700 hover:bg-gray-600 border-gray-500 flex-1"
+                className={`text-xs font-mono flex-1 ${activeBasemap === 'color' ? 'bg-gray-600' : 'bg-gray-800 hover:bg-gray-700'}`}
                 data-testid="button-color-basemap"
+                onClick={() => setActiveBasemap('color')}
               >
                 Color Basemap
               </Button>
               <Button 
                 size="sm"
-                variant="outline"
-                className="text-xs font-mono border-gray-500 flex-1"
+                className={`text-xs font-mono flex-1 ${activeBasemap === 'grayscale' ? 'bg-gray-600' : 'bg-gray-800 hover:bg-gray-700'}`}
                 data-testid="button-grayscale-basemap"
+                onClick={() => setActiveBasemap('grayscale')}
               >
                 Grayscale
               </Button>
