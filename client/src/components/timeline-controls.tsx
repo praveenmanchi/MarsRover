@@ -77,95 +77,66 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
   }
 
   return (
-    <div className="bg-card/50 backdrop-blur border-t border-border p-4" data-testid="timeline-controls">
-      {/* Mission Details - Above Timeline */}
-      <div className="grid grid-cols-8 gap-3 mb-6">
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Earth Date</span>
-              <p className="font-mono text-foreground font-semibold" data-testid="text-selected-earth-date">{formatEarthDate(selectedSol)}</p>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="bg-black/90 border-t border-cyan-500/30 p-4" data-testid="timeline-controls">
+      {/* FUI Mission Status Grid */}
+      <div className="grid grid-cols-8 gap-2 mb-6">
+        <div className="bg-black/60 border border-cyan-400/30 p-2">
+          <div className="text-xs font-mono text-cyan-400/60 uppercase">Earth Date</div>
+          <div className="text-sm font-mono text-cyan-400 font-bold" data-testid="text-selected-earth-date">{formatEarthDate(selectedSol)}</div>
+        </div>
         
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Photos</span>
-              <p className="font-mono text-foreground font-semibold" data-testid="text-photos-count">{photos.length}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-black/60 border border-green-400/30 p-2">
+          <div className="text-xs font-mono text-green-400/60 uppercase">Photos</div>
+          <div className="text-sm font-mono text-green-400 font-bold" data-testid="text-photos-count">{photos.length}</div>
+        </div>
         
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Cameras</span>
-              <p className="font-mono text-foreground font-semibold" data-testid="text-cameras-active">
-                {new Set(photos.map(p => p.cameraId)).size}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-black/60 border border-blue-400/30 p-2">
+          <div className="text-xs font-mono text-blue-400/60 uppercase">Cameras</div>
+          <div className="text-sm font-mono text-blue-400 font-bold" data-testid="text-cameras-active">
+            {new Set(photos.map(p => p.cameraId)).size}
+          </div>
+        </div>
         
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Last Contact</span>
-              <p className="font-mono text-foreground font-semibold" data-testid="text-last-contact">{getLastContact()}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-black/60 border border-yellow-400/30 p-2">
+          <div className="text-xs font-mono text-yellow-400/60 uppercase">Contact</div>
+          <div className="text-sm font-mono text-yellow-400 font-bold" data-testid="text-last-contact">{getLastContact()}</div>
+        </div>
         
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Distance Driven</span>
-              <p className="font-mono text-foreground font-semibold" data-testid="text-distance-driven">{getDistanceDriven()}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-black/60 border border-purple-400/30 p-2">
+          <div className="text-xs font-mono text-purple-400/60 uppercase">Driven</div>
+          <div className="text-sm font-mono text-purple-400 font-bold" data-testid="text-distance-driven">{getDistanceDriven()}</div>
+        </div>
         
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Total Distance</span>
-              <p className="font-mono text-foreground font-semibold" data-testid="text-total-distance">{getTotalDistance()}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-black/60 border border-orange-400/30 p-2">
+          <div className="text-xs font-mono text-orange-400/60 uppercase">Total</div>
+          <div className="text-sm font-mono text-orange-400 font-bold" data-testid="text-total-distance">{getTotalDistance()}</div>
+        </div>
         
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Location</span>
-              <p className="font-mono text-foreground font-semibold">{currentRover.location}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-black/60 border border-red-400/30 p-2">
+          <div className="text-xs font-mono text-red-400/60 uppercase">Location</div>
+          <div className="text-sm font-mono text-red-400 font-bold">{currentRover.location}</div>
+        </div>
         
-        <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-3">
-            <div className="space-y-1 text-xs">
-              <span className="text-muted-foreground uppercase">Mode</span>
-              <p className="font-mono text-chart-2 font-semibold">AUTO</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-black/60 border border-emerald-400/30 p-2">
+          <div className="text-xs font-mono text-emerald-400/60 uppercase">Mode</div>
+          <div className="text-sm font-mono text-emerald-400 font-bold">AUTO</div>
+        </div>
       </div>
 
-      {/* Timeline Slider */}
-      <div className="relative mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Mission Timeline</h3>
+      {/* FUI Timeline Control */}
+      <div className="border border-cyan-400/40 bg-black/60 p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="border-l-2 border-cyan-400 pl-3">
+            <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">MISSION TIMELINE</h3>
+            <div className="text-xs font-mono text-cyan-400/60">SOL NAVIGATION</div>
+          </div>
           <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={handlePlay}
               data-testid="button-play-timeline"
-              className="text-muted-foreground hover:text-primary"
+              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10 border border-cyan-400/40"
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </Button>
@@ -174,7 +145,7 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
               size="sm"
               onClick={handleReset}
               data-testid="button-reset-timeline"
-              className="text-muted-foreground hover:text-primary"
+              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10 border border-cyan-400/40"
             >
               <RotateCcw className="w-4 h-4" />
             </Button>
@@ -182,7 +153,7 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
         </div>
         
         <div className="flex items-center space-x-4">
-          <div className="text-xs text-muted-foreground font-mono">
+          <div className="text-xs text-cyan-400/60 font-mono bg-black/60 border border-cyan-400/30 px-2 py-1">
             <span data-testid="text-timeline-start">SOL 1</span>
           </div>
           
@@ -193,12 +164,12 @@ export function TimelineControls({ currentRover, selectedSol, onSolChange }: Tim
               max={currentRover.maxSol}
               min={1}
               step={1}
-              className="w-full"
+              className="w-full [&_[role=slider]]:bg-cyan-400 [&_[role=slider]]:border-cyan-400"
               data-testid="slider-timeline"
             />
           </div>
           
-          <div className="text-xs text-muted-foreground font-mono">
+          <div className="text-xs text-cyan-400/60 font-mono bg-black/60 border border-cyan-400/30 px-2 py-1">
             <span data-testid="text-timeline-current">SOL {currentRover.maxSol}</span>
           </div>
         </div>

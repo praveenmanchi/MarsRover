@@ -57,16 +57,22 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
       const initialPosition = ROVER_POSITIONS[selectedRover];
       const leafletMap = L.map(mapRef.current!).setView([initialPosition.lat, initialPosition.lon], 12);
 
-      // Use a Mars-themed tile layer
-      L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        attribution: 'NASA JPL Mars Trek | Mars rover tracking',
-        opacity: 0.8,
+      // Use OpenStreetMap as base layer for Mars simulation
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'NASA JPL Mars Rover Tracking | Simulated Mars Terrain',
+        opacity: 0.6,
+        // Apply Mars-like color filter
+        className: 'mars-terrain'
       }).addTo(leafletMap);
 
-      // Add Mars terrain overlay
-      const marsOverlay = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        opacity: 0.3,
-      }).addTo(leafletMap);
+      // Add custom Mars terrain styling
+      const style = document.createElement('style');
+      style.textContent = `
+        .mars-terrain {
+          filter: sepia(100%) hue-rotate(10deg) saturate(200%) contrast(120%) brightness(90%);
+        }
+      `;
+      document.head.appendChild(style);
 
       if (isMounted) {
         setMap(leafletMap);
@@ -292,86 +298,99 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         )}
       </div>
 
-      {/* Consolidated Environmental Metrics Overlay */}
-      <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md border border-white/30 rounded-lg p-4 text-white min-w-[280px]" data-testid="overlay-metrics">
-        <div className="flex items-center space-x-2 mb-4">
-          <Thermometer className="w-5 h-5 text-blue-400" />
-          <h3 className="text-sm font-semibold tracking-wide">MARS ENVIRONMENTAL DATA</h3>
+      {/* FUI Metrics Panel */}
+      <div className="absolute top-4 left-4 bg-black/80 border border-cyan-400/40 p-4 min-w-[300px]" data-testid="overlay-metrics">
+        <div className="border-l-2 border-cyan-400 pl-3 mb-4">
+          <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">SENSOR DATA</h3>
+          <div className="text-xs font-mono text-cyan-400/60">REAL-TIME MONITORING</div>
         </div>
         
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Temperature</span>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-blue-500/10 border border-blue-500/30 p-2">
+            <div className="text-xs font-mono text-blue-400/80 uppercase">TEMP</div>
+            <div className="text-lg font-mono font-bold text-blue-400">{envData.temperature}</div>
+            <div className="w-full h-1 bg-blue-500/20 mt-1">
+              <div className="h-full bg-blue-500 w-3/4"></div>
             </div>
-            <span className="font-mono text-sm text-blue-400 font-medium">{envData.temperature}</span>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Dust Level</span>
+          <div className="bg-yellow-500/10 border border-yellow-500/30 p-2">
+            <div className="text-xs font-mono text-yellow-400/80 uppercase">DUST</div>
+            <div className="text-lg font-mono font-bold text-yellow-400">{envData.dustLevel}</div>
+            <div className="w-full h-1 bg-yellow-500/20 mt-1">
+              <div className="h-full bg-yellow-500 w-1/2"></div>
             </div>
-            <span className="font-mono text-sm text-yellow-400 font-medium">{envData.dustLevel}</span>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Pressure</span>
+          <div className="bg-red-500/10 border border-red-500/30 p-2">
+            <div className="text-xs font-mono text-red-400/80 uppercase">PRESS</div>
+            <div className="text-lg font-mono font-bold text-red-400">{envData.pressure}</div>
+            <div className="w-full h-1 bg-red-500/20 mt-1">
+              <div className="h-full bg-red-500 w-2/3"></div>
             </div>
-            <span className="font-mono text-sm text-red-400 font-medium">{envData.pressure}</span>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Wind Speed</span>
+          <div className="bg-green-500/10 border border-green-500/30 p-2">
+            <div className="text-xs font-mono text-green-400/80 uppercase">WIND</div>
+            <div className="text-lg font-mono font-bold text-green-400">{envData.windSpeed}</div>
+            <div className="w-full h-1 bg-green-500/20 mt-1">
+              <div className="h-full bg-green-500 w-3/5"></div>
             </div>
-            <span className="font-mono text-sm text-green-400 font-medium">{envData.windSpeed}</span>
           </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Sol</span>
-            </div>
-            <span className="font-mono text-sm text-purple-400 font-medium">{selectedSol}</span>
+        </div>
+        
+        <div className="mt-4 pt-3 border-t border-cyan-400/20">
+          <div className="flex justify-between text-xs font-mono">
+            <span className="text-cyan-400/60">BATTERY:</span>
+            <span className="text-cyan-400">{envData.battery}</span>
           </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Battery</span>
-            </div>
-            <span className="font-mono text-sm text-cyan-400 font-medium">{envData.battery}</span>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Connection</span>
-            </div>
-            <span className="font-mono text-sm text-pink-400 font-medium">{envData.connection}</span>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
-              <span className="text-xs font-medium opacity-90">Health</span>
-            </div>
-            <span className="font-mono text-sm text-orange-400 font-medium">{envData.health}</span>
+          <div className="flex justify-between text-xs font-mono mt-1">
+            <span className="text-cyan-400/60">SIGNAL:</span>
+            <span className="text-green-400">{envData.connection}</span>
           </div>
         </div>
       </div>
 
-      {/* Icon-Only Map Controls */}
-      <div className="absolute top-4 right-4 flex flex-col space-y-2" data-testid="controls-map">
+      {/* Camera Views Panel */}
+      <div className="absolute top-4 right-4 bg-black/80 border border-cyan-400/40 p-4 w-80" data-testid="camera-views">
+        <div className="border-l-2 border-cyan-400 pl-3 mb-4">
+          <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">CAMERA FEEDS</h3>
+          <div className="text-xs font-mono text-cyan-400/60">MULTIPLE ANGLES</div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
+            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">NAVCAM</div>
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-900/50 to-red-900/50"></div>
+            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          </div>
+          
+          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
+            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">FHAZ</div>
+            <div className="absolute inset-0 bg-gradient-to-br from-red-900/50 to-orange-900/50"></div>
+            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          </div>
+          
+          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
+            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">RHAZ</div>
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-800/50 to-red-800/50"></div>
+            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          </div>
+          
+          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
+            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">MAST</div>
+            <div className="absolute inset-0 bg-gradient-to-br from-red-800/50 to-orange-700/50"></div>
+            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* FUI Map Controls */}
+      <div className="absolute bottom-20 right-4 flex flex-col space-y-2" data-testid="controls-map">
         <Button 
           onClick={handleCenterOnRover}
           size="sm"
-          className="w-10 h-10 p-0 bg-black/30 hover:bg-black/50 backdrop-blur-sm border border-white/20"
+          className="w-10 h-10 p-0 bg-black/80 hover:bg-cyan-400/20 border border-cyan-400/40 text-cyan-400"
           data-testid="button-center-rover"
           title="Center on Rover"
         >
@@ -381,8 +400,7 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         <Button 
           onClick={handleTogglePath}
           size="sm"
-          variant={showPath ? "default" : "outline"}
-          className="w-10 h-10 p-0 bg-black/30 hover:bg-black/50 backdrop-blur-sm border border-white/20"
+          className={`w-10 h-10 p-0 bg-black/80 border border-cyan-400/40 ${showPath ? 'text-cyan-400 bg-cyan-400/20' : 'text-cyan-400/60 hover:bg-cyan-400/10'}`}
           data-testid="button-show-path"
           title={showPath ? 'Hide Path' : 'Show Path'}
         >
@@ -392,8 +410,7 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         <Button 
           onClick={handleTogglePhotos}
           size="sm"
-          variant={showPhotos ? "default" : "outline"}
-          className="w-10 h-10 p-0 bg-black/30 hover:bg-black/50 backdrop-blur-sm border border-white/20"
+          className={`w-10 h-10 p-0 bg-black/80 border border-cyan-400/40 ${showPhotos ? 'text-cyan-400 bg-cyan-400/20' : 'text-cyan-400/60 hover:bg-cyan-400/10'}`}
           data-testid="button-toggle-photos"
           title={showPhotos ? 'Hide Photos' : 'Show Photos'}
         >
@@ -402,8 +419,7 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         
         <Button 
           size="sm"
-          variant="outline"
-          className="w-10 h-10 p-0 bg-black/30 hover:bg-black/50 backdrop-blur-sm border border-white/20"
+          className="w-10 h-10 p-0 bg-black/80 hover:bg-cyan-400/10 border border-cyan-400/40 text-cyan-400/60"
           data-testid="button-toggle-terrain"
           title="Toggle Terrain"
         >

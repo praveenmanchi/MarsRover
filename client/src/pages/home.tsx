@@ -12,7 +12,7 @@ import { ChevronDown, Sun, Moon } from "lucide-react";
 import type { Rover, RoverPhoto } from "@/types/rover";
 
 export default function Home() {
-  const [selectedRover, setSelectedRover] = useState<string>("perseverance");
+  const [selectedRover, setSelectedRover] = useState<string>("curiosity");
   const [selectedSol, setSelectedSol] = useState<number>(4156);
   const [selectedPhoto, setSelectedPhoto] = useState<RoverPhoto | null>(null);
   const [currentTime, setCurrentTime] = useState<string>("");
@@ -68,64 +68,50 @@ export default function Home() {
   const currentRover = rovers.find((r: Rover) => r.name === selectedRover);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
-      {/* Header */}
-      <header className="bg-card/50 backdrop-blur border-b border-border px-6 py-3" data-testid="header-main">
+    <div className="min-h-screen bg-black text-white font-mono">
+      {/* FUI Header */}
+      <header className="bg-black/90 border-b border-cyan-500/30 px-6 py-2" data-testid="header-main">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded flex items-center justify-center text-primary-foreground font-bold text-sm">
-                NASA
+              <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-sm flex items-center justify-center">
+                <span className="text-black text-xs font-bold">MSL</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground tracking-wide">MARS</h1>
-                <p className="text-primary text-xs font-medium">The Red Planet</p>
+                <h1 className="text-xl font-mono font-bold text-cyan-400 tracking-wider">CURIOSITY</h1>
+                <p className="text-cyan-500/60 text-xs font-mono">MARS SCIENCE LABORATORY</p>
               </div>
             </div>
-            <div className="flex items-center space-x-6 text-sm">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-2" data-testid="dropdown-missions">
-                    <span className="text-primary font-medium">ACTIVE MISSIONS</span>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  {rovers.map((rover) => (
-                    <DropdownMenuItem 
-                      key={rover.id}
-                      onClick={() => handleRoverSelect(rover.name)}
-                      className={`flex items-center justify-between ${selectedRover === rover.name ? 'bg-accent' : ''}`}
-                      data-testid={`mission-${rover.name}`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-2 h-2 rounded-full ${rover.status === 'active' ? 'bg-chart-2' : 'bg-muted-foreground'}`}></div>
-                        <span className="font-mono uppercase">{rover.name}</span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {rover.status === 'active' ? 'OPERATIONAL' : 'OFFLINE'}
-                      </span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="flex items-center space-x-6">
+              <div className="text-center">
+                <p className="text-xs font-mono text-cyan-500/60 uppercase">STATUS</p>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-mono font-bold text-green-400">OPERATIONAL</span>
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-xs font-mono text-cyan-500/60 uppercase">LOCATION</p>
+                <span className="text-sm font-mono font-bold text-white">GALE CRATER</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center space-x-6 text-sm">
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground uppercase">Mission Day</p>
-              <p className="text-sm font-mono font-semibold text-foreground">SOL</p>
-              <p className="text-lg font-mono font-bold text-primary" data-testid="text-current-sol">{selectedSol}</p>
+          <div className="flex items-center space-x-6">
+            <div className="text-center">
+              <p className="text-xs font-mono text-cyan-500/60 uppercase">SOL</p>
+              <p className="text-xl font-mono font-bold text-cyan-400" data-testid="text-current-sol">{selectedSol}</p>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground uppercase">Time</p>
-              <p className="text-lg font-mono font-semibold text-foreground" data-testid="text-current-time">{currentTime}</p>
+            <div className="text-center">
+              <p className="text-xs font-mono text-cyan-500/60 uppercase">EARTH TIME</p>
+              <p className="text-sm font-mono font-bold text-white" data-testid="text-current-time">{currentTime}</p>
             </div>
+            <div className="h-8 w-px bg-cyan-500/30"></div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
               data-testid="button-theme-toggle"
+              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10"
             >
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </Button>
