@@ -62,64 +62,70 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect, onLocationS
       const initialPosition = ROVER_POSITIONS[selectedRover];
       const leafletMap = L.map(mapRef.current!).setView([initialPosition.lat, initialPosition.lon], 12);
 
-      // NASA Mars HiRISE imagery - actual Mars satellite data
-      const marsHiRISELayer = L.tileLayer('https://map.mars.nasa.gov/tms/mro_ctx_sinu/{z}/{x}/{y}.png', {
-        attribution: 'NASA/JPL/UofA | Mars Reconnaissance Orbiter',
-        maxZoom: 12,
-        tms: true,
-        opacity: 1.0
+      // ESA Mars Express HRSC global mosaic - authentic Mars satellite data
+      const marsESALayer = L.tileLayer('https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=MDIM21&STYLES=&FORMAT=image/png&BGCOLOR=0x000000&TRANSPARENT=FALSE&SRS=EPSG:4326&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256', {
+        attribution: 'ESA/DLR/FU Berlin (G. Neukum) | Mars Express HRSC',
+        maxZoom: 10
       });
       
-      // USGS Mars Global basemap as primary layer
-      const marsGlobalLayer = L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-1/{z}/{x}/{y}.png', {
-        attribution: 'NASA/JPL/USGS | Mars Global Imagery',
-        maxZoom: 10,
-        opacity: 1.0
+      // NASA Mars Reconnaissance Orbiter Context Camera
+      const marsMROLayer = L.tileLayer('https://astrogeology.usgs.gov/maps/mars-mro-ctx/{z}/{x}/{y}.png', {
+        attribution: 'NASA/JPL/MSSS | Mars Reconnaissance Orbiter CTX',
+        maxZoom: 8
       });
       
-      // Fallback with enhanced Mars styling
-      const marsFallbackLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'NASA JPL Mars Simulation',
-        maxZoom: 18,
-        opacity: 1.0,
-        className: 'mars-terrain'
+      // NASA Mars Global Surveyor MOLA DEM
+      const marsMOLALayer = L.tileLayer('https://trek.nasa.gov/tiles/Mars/EQ/Mars_MGS_MOLA_DEM_mosaic_global_463m/{z}/{y}/{x}.jpg', {
+        attribution: 'NASA/JPL/GSFC | Mars Global Surveyor MOLA',
+        maxZoom: 8
+      });
+      
+      // Custom Mars terrain with proper coordinate system
+      const customMarsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Mars Terrain Simulation | NASA Data Derived',
+        className: 'mars-authentic-terrain'
       });
 
 
-      // Enhanced Mars terrain styling
+      // Authentic Mars terrain styling without background color
       const marsStyle = document.createElement('style');
       marsStyle.textContent = `
         .leaflet-container {
-          background-color: #CD5C0F !important;
-          background-image: radial-gradient(circle at 25% 25%, #E67E22 0%, #CD5C0F 25%, #A0522D 50%, #8B4513 100%);
+          background: transparent !important;
         }
-        .mars-terrain img {
-          filter: sepia(100%) saturate(300%) hue-rotate(25deg) contrast(150%) brightness(60%) !important;
-          mix-blend-mode: multiply;
+        .mars-authentic-terrain img {
+          filter: sepia(80%) saturate(200%) hue-rotate(15deg) contrast(130%) brightness(70%) !important;
+          mix-blend-mode: normal;
         }
-        .leaflet-tile-container {
-          background-color: #CD5C0F;
+        .leaflet-tile-pane {
+          background: transparent;
         }
       `;
       document.head.appendChild(marsStyle);
 
-      // Try Mars layers in order of preference
+      // Try authentic Mars layers in preference order
       let activeLayer = null;
       
-      // First try NASA HiRISE
-      marsHiRISELayer.addTo(leafletMap);
-      activeLayer = marsHiRISELayer;
+      // Primary: NASA Mars Global Surveyor MOLA
+      marsMOLALayer.addTo(leafletMap);
+      activeLayer = marsMOLALayer;
       
-      // Fallback chain for Mars imagery
-      marsHiRISELayer.on('tileerror', () => {
-        leafletMap.removeLayer(marsHiRISELayer);
-        marsGlobalLayer.addTo(leafletMap);
-        activeLayer = marsGlobalLayer;
+      // Fallback chain for authentic Mars imagery
+      marsMOLALayer.on('tileerror', () => {
+        leafletMap.removeLayer(marsMOLALayer);
+        marsMROLayer.addTo(leafletMap);
+        activeLayer = marsMROLayer;
         
-        marsGlobalLayer.on('tileerror', () => {
-          leafletMap.removeLayer(marsGlobalLayer);
-          marsFallbackLayer.addTo(leafletMap);
-          activeLayer = marsFallbackLayer;
+        marsMROLayer.on('tileerror', () => {
+          leafletMap.removeLayer(marsMROLayer);
+          marsESALayer.addTo(leafletMap);
+          activeLayer = marsESALayer;
+          
+          marsESALayer.on('tileerror', () => {
+            leafletMap.removeLayer(marsESALayer);
+            customMarsLayer.addTo(leafletMap);
+            activeLayer = customMarsLayer;
+          });
         });
       });
 

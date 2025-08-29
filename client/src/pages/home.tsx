@@ -13,7 +13,11 @@ import { ExportControls } from "@/components/export-controls";
 import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 import { MobileControls } from "@/components/mobile-controls";
 import { DayNightOverlay } from "@/components/day-night-overlay";
-import { UILayout } from "@/components/ui-layout";
+import { EnhancedUILayout } from "@/components/enhanced-ui-layout";
+import { ThreeTerrainViewer } from "@/components/three-terrain-viewer";
+import { MissionReports } from "@/components/mission-reports";
+import { ARMobileOverlay } from "@/components/ar-mobile-overlay";
+import { Activity, Map, Camera, Clock, Zap, FileText } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -29,6 +33,7 @@ export default function Home() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showLayers, setShowLayers] = useState(true);
   const [timelineEvent, setTimelineEvent] = useState<any>(null);
+  const [arActive, setArActive] = useState(false);
   
   // Theme hook must be called at top level
   const { theme, setTheme } = useTheme();
@@ -180,25 +185,61 @@ export default function Home() {
       <div className={`flex flex-col ${isFullscreen ? 'h-screen' : 'h-screen'} overflow-hidden`}>
         {/* Desktop Layout */}
         <div className="hidden md:block flex-1 relative">
-          <UILayout
+          <EnhancedUILayout
             leftPanels={[
-              <DayNightOverlay />,
-              <WeatherPanel rover={selectedRover} />,
-              <TerrainViewer location={selectedLocation || { lat: -5.4, lon: 137.8 }} />
+              {
+                component: <DayNightOverlay />,
+                title: "ENV",
+                icon: <Zap className="w-4 h-4" />,
+                tooltip: "Environmental controls and day/night cycle simulation"
+              },
+              {
+                component: <WeatherPanel rover={selectedRover} />,
+                title: "WEATHER",
+                icon: <Activity className="w-4 h-4" />,
+                tooltip: "Real-time Martian weather data and atmospheric conditions"
+              },
+              {
+                component: <ThreeTerrainViewer location={selectedLocation || { lat: -5.4, lon: 137.8 }} />,
+                title: "3D",
+                icon: <Map className="w-4 h-4" />,
+                tooltip: "Interactive 3D terrain visualization with Three.js"
+              }
             ]}
             rightPanels={[
-              <GeologicalAnalysis 
-                rover={selectedRover} 
-                selectedLocation={selectedLocation || undefined}
-              />,
-              <AnimatedTimeline 
-                rover={selectedRover}
-                onEventSelect={handleTimelineEvent}
-              />,
-              <ExportControls 
-                roverData={currentRover}
-                currentPhotos={[]}
-              />
+              {
+                component: (
+                  <GeologicalAnalysis 
+                    rover={selectedRover} 
+                    selectedLocation={selectedLocation || undefined}
+                  />
+                ),
+                title: "GEO",
+                icon: <Map className="w-4 h-4" />,
+                tooltip: "Geological analysis and surface composition data"
+              },
+              {
+                component: (
+                  <AnimatedTimeline 
+                    rover={selectedRover}
+                    onEventSelect={handleTimelineEvent}
+                  />
+                ),
+                title: "TIME",
+                icon: <Clock className="w-4 h-4" />,
+                tooltip: "Mission timeline and key events"
+              },
+              {
+                component: (
+                  <MissionReports 
+                    rover={currentRover}
+                    photos={[]}
+                  />
+                ),
+                title: "TOOLS",
+                icon: <FileText className="w-4 h-4" />,
+                tooltip: "Download mission reports and image collections"
+              }
             ]}
           >
             <MarsMap
@@ -208,7 +249,7 @@ export default function Home() {
               onPhotoSelect={handlePhotoSelect}
               onLocationSelect={handleLocationSelect}
             />
-          </UILayout>
+          </EnhancedUILayout>
         </div>
 
         {/* Mobile Layout */}
