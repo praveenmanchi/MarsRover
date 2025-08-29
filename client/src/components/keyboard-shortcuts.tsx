@@ -89,7 +89,7 @@ export function KeyboardShortcuts({
           <Button
             variant="outline"
             size="sm"
-            className={`fixed bottom-4 right-4 bg-black/90 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-mono z-40 ${className}`}
+            className={`fixed bottom-20 right-4 bg-black/90 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-mono z-40 ${className}`}
             data-testid="button-keyboard-help"
           >
             <Keyboard className="w-4 h-4 mr-1" />
@@ -130,8 +130,8 @@ export function KeyboardShortcuts({
       </Dialog>
 
       {/* Status indicator when shortcuts are active */}
-      <div className="fixed top-4 right-4 z-30 opacity-20 hover:opacity-100 transition-opacity">
-        <Card className="bg-black/90 border-cyan-500/30 backdrop-blur-sm">
+      <div className="fixed bottom-4 left-4 z-30 opacity-60 hover:opacity-100 transition-opacity pointer-events-none">
+        <Card className="bg-black/90 border-cyan-500/30 backdrop-blur-sm pointer-events-auto">
           <CardContent className="p-2">
             <div className="text-cyan-400 font-mono text-xs flex items-center gap-1">
               <Keyboard className="w-3 h-3" />

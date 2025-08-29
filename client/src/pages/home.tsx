@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRovers } from "@/lib/nasa-api";
 import { RoverSidebar } from "@/components/rover-sidebar";
-import { MarsMapStable as MarsMap } from "@/components/mars-map-stable";
+import { MarsRoverMap as MarsMap } from "@/components/mars-rover-map";
 import { TimelineControls } from "@/components/timeline-controls";
 import { ImageLightbox } from "@/components/image-lightbox";
 import { WeatherPanel } from "@/components/weather-panel";
@@ -160,24 +160,26 @@ export default function Home() {
               <p className="text-sm font-mono font-bold text-white" data-testid="text-current-time">{currentTime}</p>
             </div>
             <div className="h-8 w-px bg-cyan-500/30 hidden sm:block"></div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleToggleFullscreen}
-              data-testid="button-fullscreen"
-              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10"
-            >
-              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              data-testid="button-theme-toggle"
-              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10"
-            >
-              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleToggleFullscreen}
+                data-testid="button-fullscreen"
+                className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10"
+              >
+                {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                data-testid="button-theme-toggle"
+                className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-400/10"
+              >
+                {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
         </div>
       </header>
