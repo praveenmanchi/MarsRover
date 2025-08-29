@@ -1,119 +1,88 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 98%);
-  --foreground: hsl(0, 0%, 10%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(0, 0%, 10%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(0, 0%, 10%);
-  --primary: hsl(220, 90%, 56%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(0, 0%, 96%);
-  --secondary-foreground: hsl(0, 0%, 10%);
-  --muted: hsl(0, 0%, 94%);
-  --muted-foreground: hsl(0, 0%, 40%);
-  --accent: hsl(220, 14%, 96%);
-  --accent-foreground: hsl(220, 90%, 56%);
-  --destructive: hsl(0, 70%, 50%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(0, 0%, 90%);
-  --input: hsl(0, 0%, 95%);
-  --ring: hsl(220, 90%, 56%);
-  --chart-1: hsl(25, 85%, 55%);
-  --chart-2: hsl(120, 60%, 45%);
-  --chart-3: hsl(45, 85%, 60%);
-  --chart-4: hsl(200, 70%, 50%);
-  --chart-5: hsl(340, 75%, 55%);
-  --sidebar: hsl(18, 18%, 10%);
-  --sidebar-foreground: hsl(30, 15%, 85%);
-  --sidebar-primary: hsl(25, 85%, 55%);
-  --sidebar-primary-foreground: hsl(15, 10%, 95%);
-  --sidebar-accent: hsl(25, 25%, 18%);
-  --sidebar-accent-foreground: hsl(25, 85%, 65%);
-  --sidebar-border: hsl(20, 15%, 18%);
-  --sidebar-ring: hsl(25, 85%, 55%);
+  --background: 0 0% 3%;
+  --foreground: 0 0% 95%;
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 95%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 20 90% 50%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 0 0% 18%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 20 90% 50%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 15%;
+  --input: 0 0% 12%;
+  --ring: 20 90% 50%;
+  --chart-1: 20 90% 50%;
+  --chart-2: 120 60% 45%;
+  --chart-3: 45 85% 60%;
+  --chart-4: 200 70% 50%;
+  --chart-5: 340 75% 55%;
+  --sidebar: 0 0% 5%;
+  --sidebar-foreground: 0 0% 85%;
+  --sidebar-primary: 20 90% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 10%;
+  --sidebar-accent-foreground: 20 90% 65%;
+  --sidebar-border: 0 0% 15%;
+  --sidebar-ring: 20 90% 50%;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'Inter', serif;
   --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 }
 
 .light {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(222.2, 84%, 4.9%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(222.2, 84%, 4.9%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(222.2, 84%, 4.9%);
-  --primary: hsl(25, 85%, 55%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(210, 40%, 96%);
-  --secondary-foreground: hsl(222.2, 84%, 4.9%);
-  --muted: hsl(210, 40%, 96%);
-  --muted-foreground: hsl(215.4, 16.3%, 46.9%);
-  --accent: hsl(210, 40%, 96%);
-  --accent-foreground: hsl(222.2, 84%, 4.9%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --border: hsl(214.3, 31.8%, 91.4%);
-  --input: hsl(214.3, 31.8%, 91.4%);
-  --ring: hsl(25, 85%, 55%);
-  --chart-1: hsl(25, 85%, 55%);
-  --chart-2: hsl(120, 60%, 45%);
-  --chart-3: hsl(45, 85%, 60%);
-  --chart-4: hsl(200, 70%, 50%);
-  --chart-5: hsl(340, 75%, 55%);
-  --sidebar: hsl(0, 0%, 98%);
-  --sidebar-foreground: hsl(222.2, 84%, 4.9%);
-  --sidebar-primary: hsl(25, 85%, 55%);
-  --sidebar-primary-foreground: hsl(0, 0%, 100%);
-  --sidebar-accent: hsl(210, 40%, 96%);
-  --sidebar-accent-foreground: hsl(222.2, 84%, 4.9%);
-  --sidebar-border: hsl(214.3, 31.8%, 91.4%);
-  --sidebar-ring: hsl(25, 85%, 55%);
+  --background: 0 0% 98%;
+  --foreground: 0 0% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+  --primary: 20 90% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 10%;
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 40%;
+  --accent: 20 90% 50%;
+  --accent-foreground: 0 0% 10%;
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 90%;
+  --input: 0 0% 95%;
+  --ring: 20 90% 50%;
 }
 
 .dark {
-  --background: hsl(0, 0%, 3%);
-  --foreground: hsl(0, 0%, 98%);
-  --card: hsl(0, 0%, 6%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --popover: hsl(0, 0%, 8%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --primary: hsl(220, 90%, 60%);
-  --primary-foreground: hsl(0, 0%, 5%);
-  --secondary: hsl(0, 0%, 12%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --muted: hsl(0, 0%, 15%);
-  --muted-foreground: hsl(0, 0%, 60%);
-  --accent: hsl(220, 14%, 12%);
-  --accent-foreground: hsl(220, 90%, 60%);
-  --destructive: hsl(0, 70%, 50%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --border: hsl(0, 0%, 15%);
-  --input: hsl(0, 0%, 12%);
-  --ring: hsl(220, 90%, 60%);
-  --chart-1: hsl(203.8863, 88.2845%, 53.1373%);
-  --chart-2: hsl(159.7826, 100%, 36.0784%);
-  --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
-  --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
-  --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
-  --sidebar: hsl(228, 9.8039%, 10%);
-  --sidebar-foreground: hsl(0, 0%, 85.0980%);
-  --sidebar-primary: hsl(202.8169, 89.1213%, 53.1373%);
-  --sidebar-primary-foreground: hsl(0, 0%, 100%);
-  --sidebar-accent: hsl(205.7143, 70%, 7.8431%);
-  --sidebar-accent-foreground: hsl(203.7736, 87.6033%, 52.5490%);
-  --sidebar-border: hsl(205.7143, 15.7895%, 26.0784%);
-  --sidebar-ring: hsl(202.8169, 89.1213%, 53.1373%);
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'Inter', serif;
-  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  --radius: 1.3rem;
+  --background: 0 0% 3%;
+  --foreground: 0 0% 95%;
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 95%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 20 90% 50%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 0 0% 18%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 20 90% 50%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 15%;
+  --input: 0 0% 12%;
+  --ring: 20 90% 50%;
 }
 
 @layer base {
@@ -123,148 +92,199 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background: #0a0a0a;
   }
 
   html {
-    background: var(--background);
+    background: #0a0a0a;
   }
 }
 
-/* Minimalist panel styling */
-.minimal-panel {
-  background: var(--card);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+/* Command Center Styles */
+.command-card {
+  @apply bg-gray-900/60 backdrop-blur-md border border-gray-800/50 rounded-xl;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Clean metric card */
-.metric-card {
-  background: var(--card);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  transition: all 0.2s ease;
+.command-card:hover {
+  @apply bg-gray-900/70 border-gray-700/50;
+  box-shadow: 0 0 30px rgba(255, 107, 53, 0.1);
 }
 
-.metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+/* Status badges */
+.status-active {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs;
+  background: rgba(34, 197, 94, 0.2);
+  color: rgb(34, 197, 94);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
-/* Smooth transition animations */
-.panel-transition {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.status-inactive {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs;
+  background: rgba(239, 68, 68, 0.2);
+  color: rgb(239, 68, 68);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* Enhanced hover effects */
-.hover-glow:hover {
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
-  border-color: rgba(34, 211, 238, 0.6);
+.status-warning {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs;
+  background: rgba(245, 158, 11, 0.2);
+  color: rgb(245, 158, 11);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
-/* Custom scrollbar for mission control panels */
-.custom-scrollbar::-webkit-scrollbar {
+/* Orange gradient button */
+.btn-orange {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  @apply text-white font-medium px-4 py-2 rounded-lg transition-all;
+}
+
+.btn-orange:hover {
+  background: linear-gradient(135deg, #ff8555 0%, #ffa03e 100%);
+  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Data cards */
+.data-card {
+  @apply bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-lg p-4;
+}
+
+.data-card-header {
+  @apply flex items-center justify-between mb-3 text-xs text-gray-400 uppercase tracking-wider;
+}
+
+.data-card-value {
+  @apply text-2xl font-light text-white;
+}
+
+.data-card-unit {
+  @apply text-sm text-gray-500 ml-1;
+}
+
+/* Progress bars */
+.progress-bar {
+  @apply h-2 bg-gray-800 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full rounded-full transition-all duration-500;
+}
+
+.progress-fill-green {
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+}
+
+.progress-fill-orange {
+  background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+}
+
+.progress-fill-blue {
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+}
+
+/* Camera feed styles */
+.camera-feed {
+  @apply relative rounded-lg overflow-hidden bg-gray-900 border border-gray-800/50;
+}
+
+.camera-feed img {
+  @apply w-full h-full object-cover;
+}
+
+.camera-label {
+  @apply absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/80 to-transparent;
+}
+
+.camera-label span {
+  @apply text-xs text-white/80 font-medium;
+}
+
+/* Mission log styles */
+.log-entry {
+  @apply flex items-start gap-3 p-3 rounded-lg hover:bg-gray-900/40 transition-colors;
+}
+
+.log-time {
+  @apply text-xs text-gray-500 min-w-[60px];
+}
+
+.log-message {
+  @apply text-sm text-gray-300;
+}
+
+.log-success {
+  @apply text-green-400;
+}
+
+.log-error {
+  @apply text-red-400;
+}
+
+.log-warning {
+  @apply text-yellow-400;
+}
+
+/* Chart styles */
+.chart-container {
+  @apply relative w-full h-full;
+}
+
+.donut-chart {
+  transform: rotate(-90deg);
+}
+
+.donut-segment {
+  fill: none;
+  stroke-width: 3;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+/* Sidebar navigation */
+.nav-item {
+  @apply flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-gray-900/50 transition-all;
+}
+
+.nav-item.active {
+  @apply text-white bg-gray-900/50;
+  border-left: 2px solid #ff6b35;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(34, 211, 238, 0.1);
-  border-radius: 3px;
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(34, 211, 238, 0.3), rgba(34, 211, 238, 0.6));
-  border-radius: 3px;
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded-full;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(34, 211, 238, 0.5), rgba(34, 211, 238, 0.8));
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-600;
 }
 
-/* Mission control typography */
-.mono-display {
-  font-family: 'Geist Mono', monospace;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+/* Glass morphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Mars surface gradient background */
-.mars-surface-bg {
-  background: linear-gradient(135deg, 
-    #8B4513 0%, 
-    #A0522D 25%, 
-    #CD853F 50%, 
-    #D2691E 75%, 
-    #8B4513 100%);
+.glass-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Three.js canvas styling */
-.three-canvas {
-  border-radius: 8px;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Notification animation */
-@keyframes slideInTop {
-  from {
-    transform: translateY(-100%) translateX(-50%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) translateX(-50%);
-    opacity: 1;
-  }
-}
-
-.notification-enter {
-  animation: slideInTop 0.3s ease-out;
-}
-
-/* Loading shimmer effect */
-@keyframes shimmer {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
-  }
-}
-
-.shimmer {
-  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.1), transparent);
-  background-size: 200px 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Mars-themed gradients */
-.mars-gradient {
-  background: linear-gradient(135deg, hsl(15, 85%, 25%), hsl(25, 90%, 35%), hsl(15, 75%, 20%));
-}
-
-.space-gradient {
-  background: linear-gradient(135deg, hsl(220, 50%, 5%), hsl(240, 60%, 8%), hsl(200, 40%, 10%));
-}
-
-/* Leaflet map styling */
-.leaflet-container {
-  background: hsl(15, 85%, 25%) !important;
-  font-family: var(--font-sans);
-}
-
-.leaflet-popup-content-wrapper {
-  background: var(--card);
-  color: var(--card-foreground);
-  border-radius: var(--radius);
-}
-
-.leaflet-popup-tip {
-  background: var(--card);
-}
-
-/* Loading spinner */
+/* Loading animation */
 .loader {
-  border: 2px solid var(--muted);
-  border-top: 2px solid var(--primary);
+  border: 2px solid rgba(255, 107, 53, 0.2);
+  border-top: 2px solid #ff6b35;
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -276,77 +296,104 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Minimalist animations */
+/* Fade in animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
 .fade-in {
-  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeIn 0.5s ease-out;
 }
 
-/* Glass morphism */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Pulse animation for status indicators */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.glass-dark {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Clean typography */
-.heading-1 {
-  font-size: 2.5rem;
-  font-weight: 200;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+/* Mars surface styles */
+.mars-surface {
+  background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
 }
 
-.heading-2 {
-  font-size: 1.875rem;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-}
-
+/* Metric display */
 .metric-value {
-  font-size: 3rem;
-  font-weight: 200;
-  letter-spacing: -0.03em;
+  @apply text-3xl font-light tracking-tight;
 }
 
 .metric-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.7;
+  @apply text-xs text-gray-500 uppercase tracking-wider;
 }
 
-/* Rover marker styling */
-.rover-marker {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+/* Tab styles */
+.tab-item {
+  @apply px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors border-b-2 border-transparent;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+.tab-item.active {
+  @apply text-white border-orange-500;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--muted);
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--muted-foreground);
-  border-radius: 3px;
+/* Notification styles */
+.notification {
+  @apply fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg;
+  background: rgba(15, 15, 15, 0.95);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  backdrop-filter: blur(10px);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground);
+/* Grid layout for camera views */
+.camera-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Mission progress styles */
+.mission-progress {
+  @apply relative h-32 rounded-lg overflow-hidden;
+  background: radial-gradient(circle at center, transparent 60%, rgba(255, 107, 53, 0.1));
+}
+
+.mission-progress-ring {
+  stroke-dasharray: 339.292;
+  stroke-dashoffset: 339.292;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+/* Fix image display */
+img {
+  @apply max-w-full h-auto;
+  display: block;
+}
+
+/* Ensure images load with proper aspect ratio */
+.image-container {
+  @apply relative w-full bg-gray-900;
+}
+
+.image-container img {
+  @apply w-full h-full object-cover;
 }
