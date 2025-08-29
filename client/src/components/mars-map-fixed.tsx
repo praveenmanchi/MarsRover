@@ -83,6 +83,10 @@ export function MarsMapFixed({
         filter: sepia(100%) saturate(200%) hue-rotate(15deg) contrast(130%) brightness(70%) !important;
         mix-blend-mode: multiply;
       }
+      .elevation-label {
+        pointer-events: none;
+        z-index: 1000;
+      }
       .leaflet-tile-pane {
         opacity: 0.95;
       }
@@ -121,45 +125,71 @@ export function MarsMapFixed({
       className: 'mars-styled-terrain'
     });
 
-    // Try authentic orbital imagery first, then fallback
-    let currentLayer = null;
-    let layerSource = 'Loading...';
-    
-    // Primary: NASA HiRISE orbital imagery
-    hiRiseLayer.addTo(leafletMap);
-    currentLayer = hiRiseLayer;
-    layerSource = 'HiRISE/MRO';
+    // Use stable base layer to prevent blinking
+    styledTerrain.addTo(leafletMap);
+    let currentLayer = styledTerrain;
     
     // Create layer indicator
     const layerIndicator = document.createElement('div');
     layerIndicator.className = 'orbital-layer-indicator';
-    layerIndicator.textContent = layerSource;
+    layerIndicator.textContent = 'Mars Terrain';
     mapRef.current.appendChild(layerIndicator);
     
-    // Fallback chain for orbital imagery
-    hiRiseLayer.on('tileerror', () => {
-      console.log('HiRISE layer failed, trying MRO CTX');
-      leafletMap.removeLayer(hiRiseLayer);
-      mroCtxLayer.addTo(leafletMap);
-      currentLayer = mroCtxLayer;
-      layerIndicator.textContent = 'MRO CTX';
+    // Add topographical lines for Mars surface elevation
+    const addTopographicalLines = () => {
+      const lines = [];
+      const centerLat = currentLocation.lat;
+      const centerLon = currentLocation.lon;
       
-      mroCtxLayer.on('tileerror', () => {
-        console.log('MRO layer failed, using styled terrain');
-        leafletMap.removeLayer(mroCtxLayer);
-        styledTerrain.addTo(leafletMap);
-        currentLayer = styledTerrain;
-        layerIndicator.textContent = 'Simulated';
-      });
-    });
+      // Create elevation contour lines
+      for (let i = 1; i <= 8; i++) {
+        const radius = i * 0.005; // Degrees
+        const points = [];
+        
+        // Generate circle points for contour
+        for (let angle = 0; angle < 360; angle += 10) {
+          const radian = (angle * Math.PI) / 180;
+          const lat = centerLat + radius * Math.cos(radian);
+          const lon = centerLon + radius * Math.sin(radian);
+          points.push([lat, lon]);
+        }
+        points.push(points[0]); // Close the circle
+        
+        const contourLine = L.polyline(points, {
+          color: '#CD853F',
+          weight: 1,
+          opacity: 0.4,
+          dashArray: '2, 4'
+        });
+        
+        lines.push(contourLine);
+        contourLine.addTo(leafletMap);
+      }
+      
+      // Add elevation labels
+      for (let i = 1; i <= 4; i++) {
+        const radius = i * 0.01;
+        const elevation = Math.floor(Math.random() * 1000) - 500; // Simulated elevation
+        const labelLat = centerLat + radius;
+        const labelLon = centerLon;
+        
+        const elevationLabel = L.marker([labelLat, labelLon], {
+          icon: L.divIcon({
+            html: `<span style="color: #CD853F; font-size: 10px; font-family: monospace; background: rgba(0,0,0,0.7); padding: 1px 3px; border-radius: 2px;">${elevation}m</span>`,
+            className: 'elevation-label',
+            iconSize: [30, 12],
+            iconAnchor: [15, 6]
+          })
+        });
+        
+        lines.push(elevationLabel);
+        elevationLabel.addTo(leafletMap);
+      }
+      
+      return lines;
+    };
     
-    hiRiseLayer.on('tileload', () => {
-      layerIndicator.textContent = 'HiRISE Orbital';
-    });
-    
-    mroCtxLayer.on('tileload', () => {
-      layerIndicator.textContent = 'MRO CTX';
-    });
+    const topographicalLines = addTopographicalLines();
 
     // Add rover marker
     const roverIcon = L.divIcon({
