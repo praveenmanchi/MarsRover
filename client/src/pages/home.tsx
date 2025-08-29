@@ -6,6 +6,10 @@ import { MarsMap } from "@/components/mars-map";
 import { TimelineControls } from "@/components/timeline-controls";
 import { ImageLightbox } from "@/components/image-lightbox";
 import { SensorDashboard } from "@/components/sensor-dashboard";
+import { useTheme } from "@/components/theme-provider";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDown, Sun, Moon } from "lucide-react";
 import type { Rover, RoverPhoto } from "@/types/rover";
 
 export default function Home() {
@@ -13,6 +17,9 @@ export default function Home() {
   const [selectedSol, setSelectedSol] = useState<number>(4156);
   const [selectedPhoto, setSelectedPhoto] = useState<RoverPhoto | null>(null);
   const [currentTime, setCurrentTime] = useState<string>("");
+  
+  // Theme hook must be called at top level
+  const { theme, setTheme } = useTheme();
 
   const { data: rovers = [], isLoading: roversLoading } = useQuery({
     queryKey: ["/api/rovers"],
@@ -77,10 +84,32 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center space-x-6 text-sm">
-              <div className="flex items-center space-x-4">
-                <span className="text-primary font-medium">ROVER:</span>
-                <span className="text-foreground font-mono uppercase">{selectedRover}</span>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-2" data-testid="dropdown-missions">
+                    <span className="text-primary font-medium">ACTIVE MISSIONS</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  {rovers.map((rover) => (
+                    <DropdownMenuItem 
+                      key={rover.id}
+                      onClick={() => handleRoverSelect(rover.name)}
+                      className={`flex items-center justify-between ${selectedRover === rover.name ? 'bg-accent' : ''}`}
+                      data-testid={`mission-${rover.name}`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-2 h-2 rounded-full ${rover.status === 'active' ? 'bg-chart-2' : 'bg-muted-foreground'}`}></div>
+                        <span className="font-mono uppercase">{rover.name}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {rover.status === 'active' ? 'OPERATIONAL' : 'OFFLINE'}
+                      </span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <div className="flex items-center space-x-4">
                 <span className="text-muted-foreground">DASHBOARD</span>
                 <span className="text-muted-foreground">ENVIRONMENT</span>
@@ -98,18 +127,19 @@ export default function Home() {
               <p className="text-xs text-muted-foreground uppercase">Time</p>
               <p className="text-lg font-mono font-semibold text-foreground" data-testid="text-current-time">{currentTime}</p>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              data-testid="button-theme-toggle"
+            >
+              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            </Button>
           </div>
         </div>
       </header>
 
-      <div className="flex h-screen overflow-hidden">
-        {/* Sidebar */}
-        <RoverSidebar
-          rovers={rovers}
-          selectedRover={selectedRover}
-          onRoverSelect={handleRoverSelect}
-        />
-
+      <div className="flex flex-col h-screen overflow-hidden">
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
           {/* Sensor Dashboard */}
@@ -123,6 +153,7 @@ export default function Home() {
           {/* Map */}
           <div className="flex-1 relative">
             <MarsMap
+              key={`map-${selectedRover}`}
               selectedRover={selectedRover}
               selectedSol={selectedSol}
               onPhotoSelect={handlePhotoSelect}
