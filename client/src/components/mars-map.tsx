@@ -4,6 +4,7 @@ import { fetchLatestRoverPhotos, fetchRoverPhotos } from "@/lib/nasa-api";
 import { ImageGallery } from "./image-gallery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ROVER_POSITIONS } from "@/types/rover";
 import { Camera, Navigation, Layers, MapPin, Thermometer, Wind } from "lucide-react";
 import type { RoverPhoto } from "@/types/rover";
@@ -23,6 +24,7 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
   const [showPath, setShowPath] = useState(true);
   const [showPhotos, setShowPhotos] = useState(true);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [showCameraModal, setShowCameraModal] = useState(false);
 
   const { data: photosData, isLoading: photosLoading } = useQuery({
     queryKey: ["/api/rovers", selectedRover, "photos", selectedSol],
@@ -367,8 +369,8 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         )}
       </div>
 
-      {/* FUI Metrics Panel - Repositioned */}
-      <div className="absolute bottom-4 left-4 bg-black/80 border border-cyan-400/40 p-4 min-w-[300px] z-10" data-testid="overlay-metrics">
+      {/* FUI Metrics Panel - Fixed Position */}
+      <div className="absolute bottom-20 left-4 bg-black/80 border border-cyan-400/40 p-4 min-w-[300px] z-10" data-testid="overlay-metrics">
         <div className="border-l-2 border-cyan-400 pl-3 mb-4">
           <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">SENSOR DATA</h3>
           <div className="text-xs font-mono text-cyan-400/60">REAL-TIME MONITORING</div>
@@ -420,37 +422,69 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         </div>
       </div>
 
-      {/* Camera Views Panel - Repositioned */}
-      <div className="absolute bottom-4 right-4 bg-black/80 border border-cyan-400/40 p-4 w-80 z-10" data-testid="camera-views">
+      {/* Camera Views Panel - Made Functional */}
+      <div className="absolute top-4 right-96 bg-black/80 border border-cyan-400/40 p-4 w-80 z-10" data-testid="camera-views">
         <div className="border-l-2 border-cyan-400 pl-3 mb-4">
           <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">CAMERA FEEDS</h3>
           <div className="text-xs font-mono text-cyan-400/60">MULTIPLE ANGLES</div>
         </div>
         
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
-            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">NAVCAM</div>
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-900/50 to-red-900/50"></div>
-            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          </div>
-          
-          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
-            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">FHAZ</div>
-            <div className="absolute inset-0 bg-gradient-to-br from-red-900/50 to-orange-900/50"></div>
-            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          </div>
-          
-          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
-            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">RHAZ</div>
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-800/50 to-red-800/50"></div>
-            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          </div>
-          
-          <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative">
-            <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">MAST</div>
-            <div className="absolute inset-0 bg-gradient-to-br from-red-800/50 to-orange-700/50"></div>
-            <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          </div>
+          {['NAVCAM', 'FHAZ', 'RHAZ', 'MAST'].map((camera, index) => {
+            const cameraPhotos = photos.filter(photo => photo.cameraId.includes(camera.toLowerCase()));
+            const hasPhotos = cameraPhotos.length > 0;
+            
+            return (
+              <Dialog key={camera}>
+                <DialogTrigger asChild>
+                  <div className="bg-gray-800/50 border border-cyan-400/30 aspect-video relative cursor-pointer hover:border-cyan-400/60 transition-colors">
+                    <div className="absolute top-1 left-1 text-xs font-mono text-cyan-400">{camera}</div>
+                    {hasPhotos ? (
+                      <img 
+                        src={cameraPhotos[0].imageUrl} 
+                        alt={`${camera} view`}
+                        className="absolute inset-0 w-full h-full object-cover opacity-80"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-orange-900/50 to-red-900/50"></div>
+                    )}
+                    <div className="absolute bottom-1 right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <div className="absolute bottom-1 left-1 text-xs font-mono text-cyan-400">
+                      {hasPhotos ? `${cameraPhotos.length} photos` : 'No data'}
+                    </div>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] bg-black/95 border-cyan-400/40">
+                  <DialogHeader>
+                    <DialogTitle className="text-cyan-400 font-mono">
+                      {camera} CAMERA FEED - SOL {selectedSol}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto">
+                    {cameraPhotos.length > 0 ? (
+                      cameraPhotos.map((photo, photoIndex) => (
+                        <div key={photoIndex} className="relative group cursor-pointer">
+                          <img
+                            src={photo.imageUrl}
+                            alt={`${camera} ${photoIndex + 1}`}
+                            className="w-full aspect-video object-cover border border-cyan-400/30 hover:border-cyan-400/60 transition-colors"
+                            onClick={() => onPhotoSelect(photo)}
+                          />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="text-cyan-400 text-xs font-mono">Click to view</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-3 text-center text-cyan-400/60 font-mono py-8">
+                        No images available for {camera} on Sol {selectedSol}
+                      </div>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            );
+          })}
         </div>
       </div>
 
