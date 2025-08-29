@@ -100,23 +100,92 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
 
       setRoverMarkers(markers);
 
-      // Create mock route path for selected rover
+      // Create detailed Curiosity rover path for Gale Crater exploration
       const createRoutePath = (roverName: string) => {
         const basePosition = ROVER_POSITIONS[roverName];
+        
+        // Detailed Curiosity route through Gale Crater
         const routePoints = [
-          [basePosition.lat, basePosition.lon],
-          [basePosition.lat + 0.001, basePosition.lon + 0.0015],
-          [basePosition.lat + 0.002, basePosition.lon + 0.003],
-          [basePosition.lat + 0.0015, basePosition.lon + 0.0045],
-          [basePosition.lat + 0.003, basePosition.lon + 0.006],
+          // Landing site and early exploration
+          [basePosition.lat - 0.008, basePosition.lon - 0.010], // Bradbury Landing
+          [basePosition.lat - 0.007, basePosition.lon - 0.009], // Glenelg area
+          [basePosition.lat - 0.006, basePosition.lon - 0.008], // Yellowknife Bay
+          [basePosition.lat - 0.005, basePosition.lon - 0.007], // Darwin waypoint
+          [basePosition.lat - 0.004, basePosition.lon - 0.006], // Cooperstown
+          [basePosition.lat - 0.003, basePosition.lon - 0.005], // Kimberley formation
+          [basePosition.lat - 0.002, basePosition.lon - 0.004], // Pahrump Hills
+          [basePosition.lat - 0.001, basePosition.lon - 0.003], // Hidden Valley
+          [basePosition.lat, basePosition.lon - 0.002], // Confidence Hills
+          [basePosition.lat + 0.001, basePosition.lon - 0.001], // Telegraph Peak
+          [basePosition.lat + 0.002, basePosition.lon], // Buckskin
+          [basePosition.lat + 0.003, basePosition.lon + 0.001], // Big Sky
+          [basePosition.lat + 0.004, basePosition.lon + 0.002], // Greenhorn
+          [basePosition.lat + 0.005, basePosition.lon + 0.003], // Lubango
+          [basePosition.lat + 0.006, basePosition.lon + 0.004], // Vera Rubin Ridge
+          [basePosition.lat, basePosition.lon], // Current position
         ];
 
+        // Main drive path in blue
         const polyline = L.polyline(routePoints, {
-          color: '#3b82f6',
-          weight: 3,
-          opacity: 0.8,
-          dashArray: '5, 10'
+          color: '#1e40af',
+          weight: 4,
+          opacity: 0.9,
         }).addTo(leafletMap);
+
+        // Add sampling locations as red markers
+        const samplingLocations = [
+          { lat: basePosition.lat - 0.006, lon: basePosition.lon - 0.008, name: "John Klein" },
+          { lat: basePosition.lat - 0.005, lon: basePosition.lon - 0.007, name: "Cumberland" },
+          { lat: basePosition.lat - 0.003, lon: basePosition.lon - 0.005, name: "Windjana" },
+          { lat: basePosition.lat - 0.002, lon: basePosition.lon - 0.004, name: "Confidence Hills" },
+          { lat: basePosition.lat, lon: basePosition.lon - 0.002, name: "Telegraph Peak" },
+          { lat: basePosition.lat + 0.002, lon: basePosition.lon, name: "Buckskin" },
+          { lat: basePosition.lat + 0.004, lon: basePosition.lon + 0.002, name: "Lubango" },
+        ];
+
+        samplingLocations.forEach(sample => {
+          const sampleIcon = L.divIcon({
+            className: 'sample-marker',
+            html: `<div class="w-3 h-3 rounded-full bg-red-600 border-2 border-white shadow-lg"></div>`,
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+          });
+          
+          L.marker([sample.lat, sample.lon], { icon: sampleIcon })
+            .addTo(leafletMap)
+            .bindPopup(`<strong>${sample.name}</strong><br>Sample Location`);
+        });
+
+        // Add waypoints as yellow markers
+        const waypoints = [
+          { lat: basePosition.lat - 0.004, lon: basePosition.lon - 0.006, name: "Darwin" },
+          { lat: basePosition.lat - 0.002, lon: basePosition.lon - 0.004, name: "Cooperstown" },
+          { lat: basePosition.lat + 0.002, lon: basePosition.lon, name: "Mount Sharp Base" },
+          { lat: basePosition.lat + 0.006, lon: basePosition.lon + 0.004, name: "Vera Rubin Ridge" },
+        ];
+
+        waypoints.forEach(waypoint => {
+          const waypointIcon = L.divIcon({
+            className: 'waypoint-marker',
+            html: `<div class="w-3 h-3 rounded-full bg-yellow-500 border-2 border-white shadow-lg"></div>`,
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+          });
+          
+          L.marker([waypoint.lat, waypoint.lon], { icon: waypointIcon })
+            .addTo(leafletMap)
+            .bindPopup(`<strong>${waypoint.name}</strong><br>Navigation Waypoint`);
+        });
+
+        // Add landing zone circle
+        const landingZone = L.circle([basePosition.lat - 0.008, basePosition.lon - 0.010], {
+          color: '#8b5cf6',
+          weight: 2,
+          opacity: 0.6,
+          fillOpacity: 0.1,
+          radius: 500
+        }).addTo(leafletMap);
+        landingZone.bindPopup('<strong>Landing Zone</strong><br>Curiosity Landing Area');
 
         return polyline;
       };
@@ -298,8 +367,8 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         )}
       </div>
 
-      {/* FUI Metrics Panel */}
-      <div className="absolute top-4 left-4 bg-black/80 border border-cyan-400/40 p-4 min-w-[300px]" data-testid="overlay-metrics">
+      {/* FUI Metrics Panel - Repositioned */}
+      <div className="absolute bottom-4 left-4 bg-black/80 border border-cyan-400/40 p-4 min-w-[300px] z-10" data-testid="overlay-metrics">
         <div className="border-l-2 border-cyan-400 pl-3 mb-4">
           <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">SENSOR DATA</h3>
           <div className="text-xs font-mono text-cyan-400/60">REAL-TIME MONITORING</div>
@@ -351,8 +420,8 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         </div>
       </div>
 
-      {/* Camera Views Panel */}
-      <div className="absolute top-4 right-4 bg-black/80 border border-cyan-400/40 p-4 w-80" data-testid="camera-views">
+      {/* Camera Views Panel - Repositioned */}
+      <div className="absolute bottom-4 right-4 bg-black/80 border border-cyan-400/40 p-4 w-80 z-10" data-testid="camera-views">
         <div className="border-l-2 border-cyan-400 pl-3 mb-4">
           <h3 className="text-sm font-mono font-bold text-cyan-400 tracking-wider">CAMERA FEEDS</h3>
           <div className="text-xs font-mono text-cyan-400/60">MULTIPLE ANGLES</div>
@@ -385,51 +454,109 @@ export function MarsMap({ selectedRover, selectedSol, onPhotoSelect }: MarsMapPr
         </div>
       </div>
 
-      {/* FUI Map Controls */}
-      <div className="absolute bottom-20 right-4 flex flex-col space-y-2" data-testid="controls-map">
-        <Button 
-          onClick={handleCenterOnRover}
-          size="sm"
-          className="w-10 h-10 p-0 bg-black/80 hover:bg-cyan-400/20 border border-cyan-400/40 text-cyan-400"
-          data-testid="button-center-rover"
-          title="Center on Rover"
-        >
-          <Navigation className="w-4 h-4" />
-        </Button>
+      {/* NASA-Style Map Controls Panel */}
+      <div className="absolute top-4 left-4 bg-black/90 border border-gray-400/40 p-4 w-80 z-20" data-testid="map-controls">
+        <div className="border-l-2 border-gray-400 pl-3 mb-4">
+          <h3 className="text-sm font-mono font-bold text-white tracking-wider">CURIOSITY'S LOCATION</h3>
+          <div className="text-xs font-mono text-gray-400">Latest Drive: Sol {selectedSol} | Total Distance 29.87 km</div>
+        </div>
         
-        <Button 
-          onClick={handleTogglePath}
-          size="sm"
-          className={`w-10 h-10 p-0 bg-black/80 border border-cyan-400/40 ${showPath ? 'text-cyan-400 bg-cyan-400/20' : 'text-cyan-400/60 hover:bg-cyan-400/10'}`}
-          data-testid="button-show-path"
-          title={showPath ? 'Hide Path' : 'Show Path'}
-        >
-          <MapPin className="w-4 h-4" />
-        </Button>
-        
-        <Button 
-          onClick={handleTogglePhotos}
-          size="sm"
-          className={`w-10 h-10 p-0 bg-black/80 border border-cyan-400/40 ${showPhotos ? 'text-cyan-400 bg-cyan-400/20' : 'text-cyan-400/60 hover:bg-cyan-400/10'}`}
-          data-testid="button-toggle-photos"
-          title={showPhotos ? 'Hide Photos' : 'Show Photos'}
-        >
-          <Camera className="w-4 h-4" />
-        </Button>
-        
-        <Button 
-          size="sm"
-          className="w-10 h-10 p-0 bg-black/80 hover:bg-cyan-400/10 border border-cyan-400/40 text-cyan-400/60"
-          data-testid="button-toggle-terrain"
-          title="Toggle Terrain"
-        >
-          <Layers className="w-4 h-4" />
-        </Button>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={handleTogglePath}
+              size="sm"
+              variant={showPath ? "default" : "outline"}
+              className="text-xs font-mono bg-blue-600 hover:bg-blue-700 border-blue-500"
+              data-testid="button-rover-path"
+            >
+              🔵 Rover Drive Path
+            </Button>
+            
+            <Button 
+              onClick={handleCenterOnRover}
+              size="sm"
+              className="text-xs font-mono bg-green-600 hover:bg-green-700 border-green-500"
+              data-testid="button-rover-position"
+            >
+              🟢 Rover Position
+            </Button>
+            
+            <Button 
+              onClick={handleTogglePhotos}
+              size="sm"
+              variant={showPhotos ? "default" : "outline"}
+              className="text-xs font-mono bg-red-600 hover:bg-red-700 border-red-500"
+              data-testid="button-sampling-locations"
+            >
+              🔴 Sampling Locations
+            </Button>
+            
+            <Button 
+              size="sm"
+              className="text-xs font-mono bg-yellow-600 hover:bg-yellow-700 border-yellow-500"
+              data-testid="button-waypoints"
+            >
+              🟡 Rover Waypoints
+            </Button>
+            
+            <Button 
+              size="sm"
+              className="text-xs font-mono bg-orange-600 hover:bg-orange-700 border-orange-500"
+              data-testid="button-depot-zone"
+            >
+              🟠 Sample Depot Zone
+            </Button>
+            
+            <Button 
+              size="sm"
+              className="text-xs font-mono bg-purple-600 hover:bg-purple-700 border-purple-500"
+              data-testid="button-landing-ellipse"
+            >
+              🟣 Landing Ellipse
+            </Button>
+          </div>
+          
+          <div className="border-t border-gray-400/30 pt-3">
+            <div className="text-xs font-mono text-gray-400 mb-2">BASEMAP OPTIONS</div>
+            <div className="flex space-x-2">
+              <Button 
+                size="sm"
+                className="text-xs font-mono bg-gray-700 hover:bg-gray-600 border-gray-500 flex-1"
+                data-testid="button-color-basemap"
+              >
+                Color Basemap
+              </Button>
+              <Button 
+                size="sm"
+                variant="outline"
+                className="text-xs font-mono border-gray-500 flex-1"
+                data-testid="button-grayscale-basemap"
+              >
+                Grayscale
+              </Button>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-400/30 pt-3">
+            <div className="text-xs font-mono text-gray-400 mb-2">MISSION INFO</div>
+            <div className="text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Sampling Locations:</span>
+                <span className="text-white">28 (samples taken)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Sample Info:</span>
+                <span className="text-cyan-400 cursor-pointer">🔗</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Current Position Info */}
       {currentPosition && (
-        <div className="absolute bottom-4 right-4 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg p-3 text-white text-xs" data-testid="info-position">
+        <div className="absolute top-4 right-4 bg-black/80 border border-white/40 p-3 text-white text-xs z-30" data-testid="info-position">
           <div className="space-y-1">
             <div className="flex justify-between">
               <span className="opacity-80">Lat:</span>
